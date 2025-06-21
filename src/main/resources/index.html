@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I AM SAFE</title>
+	
+<style>
+.flex-container > div {
+	display: flex;
+	flex-direction: column;
+	margin: 5px;
+	padding: 5px;
+	font-size: 20px;
+}
+
+.flex-container > span {
+	display: flex;
+	flex-direction: row;
+	margin: 15px;
+	padding: 5px;
+	font-size: 20px;
+}
+</style>
+</head>
+
+<body>
+<h1>I AM SAFE</h1>
+<form>
+<div class="flex-container">	
+
+  <div>
+    <label for="name">Your name</label>
+    <input type="text" id="name" name="name" required oninput="handle_name()">
+  </div>
+
+
+  <div>
+    <label for="address">Email address or 10 digit cell number</label>
+    <input type="text" id="address" name="address" required oninput="handle_address()">
+  </div>
+  
+  <div>
+	<label for="shortMessage">Click to insert short message</label>
+	<select id="shortMessage" name="shortMessage" size="1" onchange="handle_select()">
+		<option value="0">(none)</option>
+		<option value="27">I am safe and well.</option>
+		<option value="28">Household safe and well.</option>
+		<option value="29">Currently at shelter.</option>
+		<option value="30">Currently at home.</option>
+		<option value="31">Currently at family/friend’s house.</option>
+		<option value="32">Currently at a hotel.</option>
+		<option value="33">Safe but moving to a safer location.</option>
+		<option value="34">Evacuating to a shelter.</option>
+		<option value="35">Evacuating to a family member/friend’s house.</option>
+		<option value="36">Evacuating and safe.</option>
+		<option value="37">At home and plan to remain here.</option>
+		<option value="38">Will contact you when able.</option>
+		<option value="39">All communications are down.</option>
+		<option value="40">Share this message with others.</option>
+	</select>
+  </div>
+	
+  <div>
+	<label for="message">Message</label>
+<textarea id="message" name="message" rows="5" cols="30" required oninput="handle_message();">
+</textarea> 
+  </div>
+	
+  <div id="charCount">&nbsp;</div>
+	
+  </div>  
+   
+  <span>
+  <button type="submit" onclick="return handle_submit();">Submit</button>
+  <button type="reset" onclick="handle_reset();">Reset</button>
+  </span>
+
+</form>
+
+<script>
+	var $message = $id("message");
+	var $shortMessage = $id("shortMessage");
+	var $name = $id("name");
+	var $address = $id("address");
+	var $charCount = $id("charCount");
+	
+
+	function $id(id) { 	// getElementById
+		return document.getElementById(id);
+	}
+	
+	function countWords(string) {
+		return string.trim().split(/\s+/).length;
+	}
+	
+	function isEmail() {
+		var email = $address.value.trim().toLowerCase();
+		return  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email);		   		   
+	}
+	
+	function isPhone() {
+		var phone = $address.value;
+		var target = phone.replace(/[^\d]/g,''); // remove all non-digits
+		if(target && target.length===10 &&target.match(/^[2-9]\d{2}/) ) {
+			return true;
+		}
+		return false;
+	}
+	
+	function handle_submit() {
+		var totalLength = getCharCount();
+		var countLimit = getCountLimit();
+		if (totalLength > countLimit) {
+			alert("Total message size(" + totalLength + ") bigger than limit(" + countLimit + ")! Shrink name, address or message!");
+		    return false;
+		}		
+		
+		if (!isEmail() && !isPhone()) {
+			alert("Address invalid: it doesn't appear to be either an email address or a 10 digit phone number");
+			return false;
+		}
+		
+		var address = $address.value.trim();
+		if (isPhone()) {
+			address = address.replace(/[^\d]/g,'');
+		}
+		
+		var count = countWords(address);
+		if (count != 1) {
+			alert("Address invalid: it should only contain 1 email address or phone number");
+			return false;
+		}
+		
+		return true;
+	}
+	
+	function handle_reset() {
+		$charCount.innerHTML="&nbsp;"
+		return 0;
+	}
+
+	function handle_select() {
+		var value = $shortMessage.value;
+		var text = $shortMessage.options[$shortMessage.selectedIndex].text;		
+		$shortMessage.selectedIndex = 0;
+		
+		var msgText = $message.value;
+		var pad = msgText.length == 0 ? "" : " ";
+		$message.value = msgText + pad + text;
+		
+		updateCharCount();
+	}
+	
+	function handle_name() {
+		updateCharCount();
+	}
+	
+	function isEmail() {
+		var email = $address.value;
+		return String(email)
+		  .toLowerCase()
+		  .match(
+		    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+		  );
+	}
+	
+	function handle_address() {
+		updateCharCount();
+	}
+	
+	function handle_message() {
+		updateCharCount();
+	}
+	
+	function getCharCount() {
+		var nameLength = $name.value.trim().length;
+		var addressLength = $address.value.trim().length;	
+		var messageLength = $message.value.trim().length;
+		totalLength = nameLength + addressLength + messageLength;
+		
+		return totalLength;	
+	}
+	
+	function getCountLimit() {
+		var isValidPhone = isPhone();
+		var countLimit = (isValidPhone) ? 140 : 500;
+		return countLimit
+	}
+	
+	function updateCharCount() {
+		var totalLength = getCharCount();
+		var countLimit = getCountLimit();
+		
+		$charCount.innerHTML = "Character count: " + totalLength + " of " + countLimit + " characters";
+		$charCount.style.color = (totalLength > countLimit) ? "red" : "black";
+	}
+	
+</script>
+
+</body>
+</html>
