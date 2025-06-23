@@ -1,0 +1,13 @@
+
+app.winlink.replacementMessageAddress:RTykulsker@gmail.com
+### app.winlink.replacementMessageAddress:(null)
+
+app.writer.csv.path:/home/bobt/Documents/miasma/csv
+app.writer.pat.path:/home/bobt/Documents/miasma/pat/mailbox
+app.writer.winlinkExpress.path:/home/bobt/Documents/miasma/winlinkExpress
+app.writer.winlinkExpress.sender:KM6SO
+
+server.port:5000
+#server.api.prefix:miasma/v1/
+server.app.version:version 0.0.1
+

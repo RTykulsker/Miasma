@@ -1,0 +1,114 @@
+/**
+
+The MIT License (MIT)
+
+Copyright (c) 2022, Robert Tykulsker
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+*/
+
+package com.surftools.miasma.handler;
+
+import org.eclipse.jetty.http.HttpStatus;
+import org.slf4j.Logger;
+
+import com.surftools.config.IConfigurationManager;
+
+import io.javalin.http.ContentType;
+import io.javalin.http.Context;
+import io.javalin.http.Handler;
+import io.javalin.http.HttpCode;
+
+public abstract class AbstractBaseHandler implements Handler {
+  protected final Logger logger;
+  protected final IConfigurationManager cm;
+  // protected final IStatService stats;
+  protected final CommonLogger commonLogger;
+
+  protected String method;
+  protected String resource;
+  protected Context ctx;
+
+  public AbstractBaseHandler(IConfigurationManager cm, Logger logger) {
+    this.cm = cm;
+    this.logger = logger;
+    this.commonLogger = new CommonLogger();
+  }
+
+  @Override
+  public void handle(Context ctx) throws Exception {
+
+    this.ctx = ctx;
+    method = ctx.method();
+    resource = ctx.url().substring(ctx.url().lastIndexOf("/"));
+    var paramMap = (method.equals("GET")) ? ctx.queryParamMap() : ctx.formParamMap();
+    var sb = new StringBuilder();
+    for (String key : paramMap.keySet()) {
+      var list = paramMap.get(key);
+      var listAsString = String.join(",", list);
+      sb.append(key + " => [" + listAsString + "]\n");
+    }
+    logger.debug(method + " Params: \n" + sb.toString());
+  }
+
+  protected String getParam(String key) {
+    if (method.equals("GET")) {
+      return ctx.queryParam(key);
+    } else {
+      return ctx.formParam(key);
+    }
+  }
+
+  public void returnResult(HttpCode httpCode, String response, String userName) {
+    commonLogger.log(ctx.req.getRemoteHost(), userName, method, resource, httpCode.getStatus(), response.length());
+
+    ctx.result(response);
+    ctx.status(httpCode);
+  }
+
+  public void returnResult(String response) {
+    returnResult(HttpCode.OK, response, null);
+  }
+
+  public void returnResult(String response, String userName) {
+    returnResult(HttpCode.OK, response, userName);
+  }
+
+  public void returnResult(HttpCode httpCode, String response) {
+    returnResult(httpCode, response, null);
+  }
+
+  public void returnHtml(String response) {
+    commonLogger.log(ctx.req.getRemoteHost(), null, method, resource, HttpStatus.OK_200, response.length());
+
+    ctx.html(response);
+    ctx.status(HttpStatus.OK_200);
+  }
+
+  protected void returnBytes(byte[] bytes, String name) {
+    commonLogger.log(ctx.req.getRemoteHost(), null, method, resource, HttpStatus.OK_200, bytes.length);
+
+    ctx.contentType(ContentType.APPLICATION_OCTET_STREAM);
+    ctx.header("Content-disposition", "attachment; filename=" + name);
+    ctx.result(bytes);
+  }
+
+}

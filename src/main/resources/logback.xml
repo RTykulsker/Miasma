@@ -1,0 +1,38 @@
+<configuration>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+		<pattern>%d{HH:mm:ss.SSS} %-5level %class{0}.%M - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+
+  <appender name="TIME_BASED_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>miasma-log.txt</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <!-- daily rollover -->
+        <fileNamePattern>miasma-log-%d.txt</fileNamePattern>
+        <maxHistory>30</maxHistory>
+    </rollingPolicy>
+
+    <encoder>
+        <pattern>%msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <logger name="com.surftools.miasma.statService.CommonLogger" level="INFO">
+  <appender-ref ref="STDOUT" />
+  <appender-ref ref="TIME_BASED_FILE" />
+  </logger>
+  
+  <logger name="com.surftools" level="INFO"/>
+
+  <logger name="com.surftools.miasma.statService.CommonLogger" level="INFO"/>
+
+  <logger name="com.surftools.miasma.handler.CreateHandler" level="INFO"/>
+
+  <root level="WARN">
+    <appender-ref ref="STDOUT" />
+  </root>
+  
+</configuration>
