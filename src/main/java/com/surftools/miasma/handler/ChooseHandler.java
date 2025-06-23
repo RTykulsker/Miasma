@@ -70,7 +70,7 @@ public class ChooseHandler extends AbstractBaseHandler {
       html = html.replaceAll("<!-- TYPE-INPUT -->", "email");
     } else {
       html = html.replaceAll("<!-- TYPE-DEVICE -->", "a cell phone");
-      html = html.replaceAll("<!-- TYPE-LABEL -->", "10 digit cell phone number");
+      html = html.replaceAll("<!-- TYPE-LABEL -->", "Cell phone number (10 digits)");
       html = html.replaceAll("<!-- TYPE-MAX-CHARS -->", "92");
       html = html.replaceAll("<!-- TYPE-IS-EMAIL -->", "false");
       html = html.replaceAll("<!-- TYPE-INPUT -->", "tel");
