@@ -38,8 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
-import com.surftools.miasma.utils.FileUtils;
-import com.surftools.miasma.utils.UtcDateTime;
 
 public class PatMessageWriter extends AbstractBaseMessageWriter {
   private static final Logger logger = LoggerFactory.getLogger(PatMessageWriter.class);
@@ -51,7 +49,7 @@ public class PatMessageWriter extends AbstractBaseMessageWriter {
 
   private String sender;
 
-  public PatMessageWriter(IConfigurationManager cm) {
+  public PatMessageWriter(IConfigurationManager cm) throws Exception {
     this.cm = cm;
     var outputPathString = cm.getAsString(ConfigurationKey.APP_WRITER_PAT_PATH);
     if (outputPathString == null) {
@@ -59,13 +57,13 @@ public class PatMessageWriter extends AbstractBaseMessageWriter {
     }
 
     outputPath = Path.of(outputPathString);
-    FileUtils.createDirectory(outputPath);
+    Files.createDirectory(outputPath);
 
     sender = cm.getAsString(ConfigurationKey.APP_WRITER_WINLINK_EXPRESS_SENDER);
-    FileUtils.createDirectory(Path.of(outputPath.toString(), sender));
+    Files.createDirectory(Path.of(outputPath.toString(), sender));
 
     for (var dir : List.of("archive", "in", "out", "sent")) {
-      FileUtils.createDirectory(Path.of(outputPath.toString(), sender, dir));
+      Files.createDirectory(Path.of(outputPath.toString(), sender, dir));
     }
 
   }

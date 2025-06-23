@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 import com.opencsv.CSVWriter;
 import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
-import com.surftools.miasma.utils.FileUtils;
 
 public class CsvMessageWriter extends AbstractBaseMessageWriter {
   private static final Logger logger = LoggerFactory.getLogger(CsvMessageWriter.class);
@@ -51,7 +50,7 @@ public class CsvMessageWriter extends AbstractBaseMessageWriter {
 
   private StringBuilder content = new StringBuilder();
 
-  public CsvMessageWriter(IConfigurationManager cm) {
+  public CsvMessageWriter(IConfigurationManager cm) throws Exception {
     this.cm = cm;
     var outputPathString = cm.getAsString(ConfigurationKey.APP_WRITER_CSV_PATH);
     if (outputPathString == null) {
@@ -59,7 +58,7 @@ public class CsvMessageWriter extends AbstractBaseMessageWriter {
     }
 
     outputPath = Path.of(outputPathString);
-    FileUtils.createDirectory(outputPath);
+    Files.createDirectory(outputPath);
 
     path = Path.of(outputPath.toString(), "miasma.csv");
     var file = new File(path.toString());

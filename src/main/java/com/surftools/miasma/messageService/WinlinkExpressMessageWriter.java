@@ -36,8 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
-import com.surftools.miasma.utils.FileUtils;
-import com.surftools.miasma.utils.UtcDateTime;
 
 public class WinlinkExpressMessageWriter extends AbstractBaseMessageWriter {
   private static final Logger logger = LoggerFactory.getLogger(WinlinkExpressMessageWriter.class);
@@ -49,7 +47,7 @@ public class WinlinkExpressMessageWriter extends AbstractBaseMessageWriter {
 
   private String sender;
 
-  public WinlinkExpressMessageWriter(IConfigurationManager cm) {
+  public WinlinkExpressMessageWriter(IConfigurationManager cm) throws Exception {
     this.cm = cm;
     var outputPathString = cm.getAsString(ConfigurationKey.APP_WRITER_WINLINK_EXPRESS_PATH);
     if (outputPathString == null) {
@@ -57,7 +55,7 @@ public class WinlinkExpressMessageWriter extends AbstractBaseMessageWriter {
     }
 
     outputPath = Path.of(outputPathString);
-    FileUtils.createDirectory(outputPath);
+    Files.createDirectory(outputPath);
 
     sender = cm.getAsString(ConfigurationKey.APP_WRITER_WINLINK_EXPRESS_SENDER);
   }

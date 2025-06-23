@@ -27,6 +27,7 @@ SOFTWARE.
 
 package com.surftools.miasma.handler;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
@@ -41,7 +42,6 @@ import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
 import com.surftools.miasma.messageService.IamSafeMessage;
 import com.surftools.miasma.messageService.MessageProcessor;
-import com.surftools.miasma.utils.FileUtils;
 
 import io.javalin.http.Context;
 import io.javalin.http.HttpCode;
@@ -60,10 +60,10 @@ public class EntryHandler extends AbstractBaseHandler {
   private final int MAX_SMS_CHAR_COUNT = 140;
   private final MessageProcessor mp;
 
-  public EntryHandler(IConfigurationManager cm) {
+  public EntryHandler(IConfigurationManager cm) throws Exception {
     super(cm, logger);
 
-    rawHtml = FileUtils.readFile(Path.of(cm.getAsString(ConfigurationKey.TEMPLATE_THANKS_FILE_NAME)), "thanks");
+    rawHtml = Files.readString(Path.of(cm.getAsString(ConfigurationKey.TEMPLATE_THANKS_FILE_NAME)));
     replacementAddress = cm.getAsString(ConfigurationKey.APP_WINLINK_REPLACEMENT_MESSAGE_ADDRESS);
 
     if (replacementAddress.equals("(null)")) {

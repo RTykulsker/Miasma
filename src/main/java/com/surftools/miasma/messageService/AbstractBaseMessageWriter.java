@@ -27,6 +27,10 @@ SOFTWARE.
 
 package com.surftools.miasma.messageService;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public abstract class AbstractBaseMessageWriter implements IMessageWriter {
@@ -37,5 +41,22 @@ public abstract class AbstractBaseMessageWriter implements IMessageWriter {
 
   @Override
   public abstract void write(IamSafeMessage message);
+
+  public class UtcDateTime {
+
+    public static LocalDateTime ofNow() {
+      var fields = Instant.now().toString().split("T"); // 2025-01-22T02:27:38.304917131Z
+      var dateFields = fields[0].split("-");
+      var utcDate = LocalDate.of(atoi(dateFields[0]), atoi(dateFields[1]), atoi(dateFields[2]));
+      var timeFields = fields[1].split("\\.")[0].split(":");
+      var utcTime = LocalTime.of(atoi(timeFields[0]), atoi(timeFields[1]), atoi(timeFields[2]));
+      var utcDateTime = LocalDateTime.of(utcDate, utcTime);
+      return utcDateTime;
+    }
+
+    private static int atoi(String s) {
+      return Integer.valueOf(s);
+    }
+  }
 
 }

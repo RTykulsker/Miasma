@@ -38,7 +38,7 @@ public class MessageProcessor {
 
   protected List<IMessageWriter> writers;
 
-  public MessageProcessor(IConfigurationManager cm) {
+  public MessageProcessor(IConfigurationManager cm) throws Exception {
     writers = List.of(new WinlinkExpressMessageWriter(cm), new PatMessageWriter(cm), new CsvMessageWriter(cm));
   }
 

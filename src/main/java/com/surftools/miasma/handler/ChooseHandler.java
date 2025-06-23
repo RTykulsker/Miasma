@@ -27,6 +27,7 @@ SOFTWARE.
 
 package com.surftools.miasma.handler;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.slf4j.Logger;
@@ -34,7 +35,6 @@ import org.slf4j.LoggerFactory;
 
 import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
-import com.surftools.miasma.utils.FileUtils;
 
 import io.javalin.http.Context;
 
@@ -51,9 +51,9 @@ public class ChooseHandler extends AbstractBaseHandler {
 
   private String rawHtml;
 
-  public ChooseHandler(IConfigurationManager cm) {
+  public ChooseHandler(IConfigurationManager cm) throws Exception {
     super(cm, logger);
-    rawHtml = FileUtils.readFile(Path.of(cm.getAsString(ConfigurationKey.TEMPLATE_ENTRY_FILE_NAME)), "entry");
+    rawHtml = Files.readString(Path.of(cm.getAsString(ConfigurationKey.TEMPLATE_ENTRY_FILE_NAME)));
   }
 
   @Override
