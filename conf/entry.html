@@ -32,7 +32,7 @@
 
         <div class="form-control">
             <label for="shortMessage">Click to insert short message</label>
-            <select class="form-content" id="shortMessage" name="shortMessage" size="1" onchange="handle_select()">
+            <select class="form-content dropdown" id="shortMessage" name="shortMessage" size="1" onchange="handle_select()">
 				<option value="0">(none)</option>
 				<option value="27">I am safe and well.</option>
 				<option value="28">Household safe and well.</option>
@@ -58,23 +58,17 @@
 <textarea id="message" name="message" rows="5" cols="40" required oninput="updateCharCount();">
 </textarea>
             <p/>
-            <div id="charCount" class="charCount" font-size=text-sm " align="right ">0/<!-- TYPE-MAX-CHARS --></div>
+            <div id="charCount" class="charCount text-end" font-size=text-sm">0/<!-- TYPE-MAX-CHARS --></div>
   		</div>
-	
-  
-   		<div class="form-control " align="center ">
+
+		<div class="form-control text-center">
   			<span>
-  				<button type="submit " onclick="return handle_submit(); ">Submit</button>
-  				<button type="reset " onclick="handle_reset(); ">Reset</button>
+  				<button class="btn btn-primary" type="submit onclick="return handle_submit();>Submit</button>
+  				<button class="btn btn-secondary" type="reset onclick="handle_reset();>Reset</button>
   			</span>	
 		</div>
 	</form>
 </div>	
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js " 
-	integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz " 
-	crossorigin="anonymous ">
-</script>
 
 <script>
 	var $message = $id("message");
