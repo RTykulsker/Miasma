@@ -55,7 +55,7 @@ public class WinlinkExpressMessageWriter extends AbstractBaseMessageWriter {
     }
 
     outputPath = Path.of(outputPathString);
-    Files.createDirectory(outputPath);
+    Files.createDirectories(outputPath);
 
     sender = cm.getAsString(ConfigurationKey.APP_WRITER_WINLINK_EXPRESS_SENDER);
   }

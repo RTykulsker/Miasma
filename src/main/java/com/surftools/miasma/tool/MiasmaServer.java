@@ -33,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.surftools.config.ConfigurationKey;
-import com.surftools.config.IConfigurationManager;
 import com.surftools.config.PropertyFileConfigurationManager;
 import com.surftools.miasma.handler.ChooseHandler;
 import com.surftools.miasma.handler.EntryHandler;
@@ -84,23 +83,17 @@ public class MiasmaServer {
     logger.info("setting up server");
 
     var cm = new PropertyFileConfigurationManager(confFileName, ConfigurationKey.values());
-
     var chooseHandler = new ChooseHandler(cm);
-
     var app = Javalin.create();
-    app.get(endpoint("/", cm), new IndexHandler(cm));
-    app.get(endpoint("/chooseEmail", cm), chooseHandler);
-    app.get(endpoint("/chooseSMS", cm), chooseHandler);
-    app.get(endpoint("/entry", cm), new EntryHandler(cm));
+    app.get("/", new IndexHandler(cm));
+    app.get("/index", new IndexHandler(cm));
+    app.get("/chooseEmail", chooseHandler);
+    app.get("/chooseSMS", chooseHandler);
+    app.get("/entry", new EntryHandler(cm));
 
     var port = cm.getAsInt(ConfigurationKey.SERVER_PORT);
     app.start(port);
     logger.info("started on port: " + port);
-  }
-
-  public String endpoint(String endpoint, IConfigurationManager cm) {
-    var apiPrefix = cm.getAsString(ConfigurationKey.SERVER_API_PREFIX);
-    return apiPrefix + endpoint;
   }
 
 }

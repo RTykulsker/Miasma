@@ -7,55 +7,41 @@
 rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
     crossorigin="anonymous">
-<title>I AM SAFE <!-- APP_VERSION --></title>
-	
-
-<style>
-	<!-- 
-.flex-container > div {
-	display: flex;
-	flex-direction: column;
-	margin: 5px;
-	padding: 5px;
-	font-size: 20px;
-}
-
-form {
-  /* Center the form on the page */
-  margin: 0 auto;
-  width: 500px;
-  /* Form outline */
-  padding: 1em;
-  border: 1px solid #CCC;
-  border-radius: 1em;
-}
--->
-
-</style>
-
+<title>I'm safe></title>
 </head>
 
 <body>
-<div class="container-fluid text-center">	
-<h2 class="container text">I'm safe</h2>
+<div class="container text-center">	
+<h2>I'm safe</h2>
 
 <div>
-A simple web site/service to send an "I Am Safe" message via (ham) radio to an email address or cell phone
-
-<form action="/chooseEmail" method="GET" enctype="application/x-www-form-urlencoded"
-	<input type="hidden" id="isEmail" name="isEmail" value="true">
-	<button>Email</button>
-</form>
-
-<form action="/chooseSMS" method="GET" enctype="application/x-www-form-urlencoded"	
-	<input type="hidden" id="isEmail" name="isEmail" value="false">
-	<button>SMS</button>
-</form
-
+	Disaster strikes! You have no Interne or cell service. 
+	You are safe but how can you tell your family and friends outside of the disaster area?
+	<p/><p/>
+	You can compose a short message and we'll send that message, via 
+	<strong>HAM</strong> radio to a location with Internet access.
+	<p/><p/>
+	First, choose how you want us to <strong>deliver</strong> that message, via Email or via SMS?
 </div>
+
+<p/>
+<span>
+	<a href="/chooseEmail" class="btn btn-primary" role="button">Email</a>
+	<span> or </span>
+	<a href="/chooseSMS" class="btn btn-primary" role="button">SMS</a>
+</span>
+<p/><p/><p>
+
+<div>
+	Note that message delivery is <strong>NOT</strong> guarenteed and <strong>NO</strong> replies to your device are possible.
+</div>
+
+<!--
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
       crossorigin="anonymous">
 </script>
+-->
+
 </body>
 </html>

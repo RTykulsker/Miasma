@@ -27,9 +27,6 @@ SOFTWARE.
 
 package com.surftools.miasma.handler;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,19 +38,15 @@ import io.javalin.http.Context;
 public class IndexHandler extends AbstractBaseHandler {
   private static final Logger logger = LoggerFactory.getLogger(IndexHandler.class);
 
-  private static String html;
-
   public IndexHandler(IConfigurationManager cm) throws Exception {
-    super(cm, logger);
-
-    html = Files.readString(Path.of(cm.getAsString(ConfigurationKey.TEMPLATE_INDEX_FILE_NAME)));
+    super(cm, logger, ConfigurationKey.TEMPLATE_INDEX_FILE_NAME);
   }
 
   @Override
   public void handle(Context ctx) throws Exception {
     super.handle(ctx);
 
-    returnHtml(html);
+    returnHtml(getTemplateHtml());
   } // end handle()
 
 }

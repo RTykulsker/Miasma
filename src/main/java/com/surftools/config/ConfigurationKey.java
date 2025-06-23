@@ -36,13 +36,11 @@ public enum ConfigurationKey {
   APP_WRITER_WINLINK_EXPRESS_SENDER("app.writer.winlinkExpress.sender"), //
 
   SERVER_PORT("server.port", "5000"), //
-  SERVER_API_PREFIX("server.api.prefix", ""), //
-  SERVER_APP_VERSION("server.app.version", "version 0.0.1"), //
 
+  TEMPLATE_CACHE_FILES("template.cache.files", "true"), //
   TEMPLATE_INDEX_FILE_NAME("template.index.fileName", "conf/index.html"), //
   TEMPLATE_ENTRY_FILE_NAME("template.entry.fileName", "conf/entry.html"), //
   TEMPLATE_THANKS_FILE_NAME("template.thanks.fileName", "conf/thanks.html"), //
-
   ;
 
   private final String key;

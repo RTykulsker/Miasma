@@ -27,9 +27,6 @@ SOFTWARE.
 
 package com.surftools.miasma.handler;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,11 +46,8 @@ import io.javalin.http.Context;
 public class ChooseHandler extends AbstractBaseHandler {
   private static final Logger logger = LoggerFactory.getLogger(ChooseHandler.class);
 
-  private String rawHtml;
-
   public ChooseHandler(IConfigurationManager cm) throws Exception {
-    super(cm, logger);
-    rawHtml = Files.readString(Path.of(cm.getAsString(ConfigurationKey.TEMPLATE_ENTRY_FILE_NAME)));
+    super(cm, logger, ConfigurationKey.TEMPLATE_ENTRY_FILE_NAME);
   }
 
   @Override
@@ -61,19 +55,25 @@ public class ChooseHandler extends AbstractBaseHandler {
     super.handle(ctx);
 
     var pathInfoString = ctx.req.getPathInfo();
+    var hiddenEmail = getParam("isEmail");
+    if (hiddenEmail != null) {
+      logger.info("### hidden: " + hiddenEmail);
+    }
     var isEmail = pathInfoString.equals("/chooseEmail");
 
-    var html = new String(rawHtml);
+    var html = getTemplateHtml();
     if (isEmail) {
       html = html.replaceAll("<!-- TYPE-DEVICE -->", "an Email address");
       html = html.replaceAll("<!-- TYPE-LABEL -->", "Email address");
       html = html.replaceAll("<!-- TYPE-MAX-CHARS -->", "500");
       html = html.replaceAll("<!-- TYPE-IS-EMAIL -->", "true");
+      html = html.replaceAll("<!-- TYPE-INPUT -->", "email");
     } else {
       html = html.replaceAll("<!-- TYPE-DEVICE -->", "a cell phone");
       html = html.replaceAll("<!-- TYPE-LABEL -->", "10 digit cell phone number");
       html = html.replaceAll("<!-- TYPE-MAX-CHARS -->", "92");
       html = html.replaceAll("<!-- TYPE-IS-EMAIL -->", "false");
+      html = html.replaceAll("<!-- TYPE-INPUT -->", "tel");
     }
 
     returnHtml(html);

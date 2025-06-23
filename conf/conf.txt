@@ -8,6 +8,5 @@ app.writer.winlinkExpress.path:/home/bobt/Documents/miasma/winlinkExpress
 app.writer.winlinkExpress.sender:KM6SO
 
 server.port:5000
-#server.api.prefix:miasma/v1/
-server.app.version:version 0.0.1
 
+template.cache.files:false

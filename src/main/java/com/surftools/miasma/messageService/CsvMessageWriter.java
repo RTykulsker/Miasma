@@ -42,8 +42,6 @@ import com.surftools.config.IConfigurationManager;
 public class CsvMessageWriter extends AbstractBaseMessageWriter {
   private static final Logger logger = LoggerFactory.getLogger(CsvMessageWriter.class);
 
-  protected IConfigurationManager cm;
-
   private Path outputPath;
   private Path path;
   protected boolean isEnabled = true;
@@ -51,14 +49,14 @@ public class CsvMessageWriter extends AbstractBaseMessageWriter {
   private StringBuilder content = new StringBuilder();
 
   public CsvMessageWriter(IConfigurationManager cm) throws Exception {
-    this.cm = cm;
+
     var outputPathString = cm.getAsString(ConfigurationKey.APP_WRITER_CSV_PATH);
     if (outputPathString == null) {
       isEnabled = false;
     }
 
     outputPath = Path.of(outputPathString);
-    Files.createDirectory(outputPath);
+    Files.createDirectories(outputPath);
 
     path = Path.of(outputPath.toString(), "miasma.csv");
     var file = new File(path.toString());

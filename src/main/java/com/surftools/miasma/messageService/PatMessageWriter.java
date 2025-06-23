@@ -57,13 +57,13 @@ public class PatMessageWriter extends AbstractBaseMessageWriter {
     }
 
     outputPath = Path.of(outputPathString);
-    Files.createDirectory(outputPath);
+    Files.createDirectories(outputPath);
 
     sender = cm.getAsString(ConfigurationKey.APP_WRITER_WINLINK_EXPRESS_SENDER);
-    Files.createDirectory(Path.of(outputPath.toString(), sender));
+    Files.createDirectories(Path.of(outputPath.toString(), sender));
 
     for (var dir : List.of("archive", "in", "out", "sent")) {
-      Files.createDirectory(Path.of(outputPath.toString(), sender, dir));
+      Files.createDirectories(Path.of(outputPath.toString(), sender, dir));
     }
 
   }
