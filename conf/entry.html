@@ -4,33 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
+	rel="stylesheet"
+	    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+	    crossorigin="anonymous">
     <title>I'm safe</title>
 </head>
 
 <body>
-    <div class="container text-center">
+<div class="container">
         <h2>I'm safe</h2>
 
         Compose a short message for delivery via <!-- TYPE-DEVICE -->.
-        <p/>
+		<br><br>
 		
-    </div class="form-group">
+    <div class="form-group">
     <form action="/entry" method="GET" enctype="application/x-www-form-urlencoded">
 
         <div class="form-control">
             <label class="form-label" for="name">Your name</label>
-            <p/>
-            <input class="form-content" type="text" id="name" name="name" required">
+            <p></p>
+            <input class="form-content" type="text" id="name" name="name" required>
         </div>
 
         <div class="form-control">
             <label for="address"><!-- TYPE-LABEL --></label>
-            <p/>
-            <input type="<!-- TYPE-INPUT -->" id="address" name="address" required">
+            <p></p>
+            <input type="<!-- TYPE-INPUT -->" id="address" name="address" required>
         </div>
 
-        <div class="form-control">
+		<div>
             <label for="shortMessage">Click to insert short message</label>
             <select class="form-content dropdown" id="shortMessage" name="shortMessage" size="1" onchange="handle_select()">
 				<option value="0">(none)</option>
@@ -53,21 +56,22 @@
 
         <div class="form-control">
             <label for="message">Message</label>
-            <p/>
-            <p/>
+            <p></p><p></p>
 <textarea id="message" name="message" rows="5" cols="40" required oninput="updateCharCount();">
 </textarea>
-            <p/>
-            <div id="charCount" class="charCount text-end" font-size=text-sm">0/<!-- TYPE-MAX-CHARS --></div>
+            <p></p>
+            <div id="charCount" class="charCount text-end text-sm">0/<!-- TYPE-MAX-CHARS --></div>
   		</div>
 
 		<div class="form-control text-center">
   			<span>
-  				<button class="btn btn-primary" type="submit onclick="return handle_submit();>Submit</button>
-  				<button class="btn btn-secondary" type="reset onclick="handle_reset();>Reset</button>
+  				<button class="btn btn-primary" type="submit" onclick="return handle_submit();">Submit</button>
+  				<button class="btn btn-secondary" type="reset" onclick="return handle_reset();">Reset</button>
   			</span>	
 		</div>
+
 	</form>
+	</div>
 </div>	
 
 <script>
@@ -76,7 +80,7 @@
 	var $name = $id("name");
 	var $address = $id("address");
 	var $charCount = $id("charCount");
-	var $isEmail = <!-- TYPE-IS-EMAIL -->
+	var $isEmail = JS-TYPE-IS-EMAIL;
 	
 	function $id(id) { 	// getElementById
 		return document.getElementById(id);
@@ -99,15 +103,23 @@
 		    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ ); } 
 			
 	function isValidPhone() { 
-		var phone = $address.value.trim(); var target = phone.replace(/[^\d]/g,''); // remove all non-digits 
+		var phone = $address.value.trim(); 
+		var target = phone.replace(/[^\d]/g,''); // remove all non-digits 
 			if(target && target.length===10 &&target.match(/^[2-9]\d{2}/) ) { 
 				return true; 
 			} return false; 
-	} 
+	}
+	
+	function isNonAscii() {
+		var message = $address.value.trim();
+		var hasNonAscii = /^[\u0000-\u007f]*$/.test(message);
+		alert("isNonAscii: " + message + ", has?: " + hasNonAscii);
+		return hasNonAscii;
+	}
 	
 	function handle_submit() { 
 		var charCount = getCharCount(); 
-		var countLimit =<!-- TYPE-MAX-CHARS -->; 
+		var countLimit =JS-TYPE-MAX-CHARS; 
 		if (charCount > countLimit) { 
 			alert("Message size(" + charCount + ") bigger than limit(" + countLimit + ")! Shrink message!"); 
 			return false; 
@@ -123,17 +135,22 @@
 				alert("Address does not appear to be a valid 10 digit cell phone number"); 
 				return false; 
 			} 
-		} 
+		}
+		
+		if (isNonAscii()) {
+			alert("Non ASCII characters (such as diacritical marks or emojis can't be sent. Please remove!");
+			return false;
+		}
 		
 		var count = countWords(address); 
 		if (count != 1) { 
-			alert("Address invalid: it should only contain 1 <!-- TYPE-NAME -->"); 
+			alert("Address invalid: it should only contain 1 JS-TYPE-NAME"); 
 				return false; 
 			} return true; 
 		} 
 		
 	function handle_reset() { 
-		$charCount.innerHTML="0/<!-- TYPE-MAX-CHARS-->"; 
+		$charCount.innerHTML="0/JS-TYPE-MAX-CHARS"; 
 		return 0; 
 	} 
 	
@@ -152,7 +169,7 @@
 	
 	function updateCharCount() { 
 		var totalLength = getCharCount(); 
-		var countLimit =<!-- TYPE-MAX-CHARS -->; 
+		var countLimit = JS-TYPE-MAX-CHARS; 
 		$charCount.innerHTML = totalLength + "/" + countLimit; 
 		$charCount.style.color = (totalLength > countLimit) ? "red" : "black"; 
 	}
