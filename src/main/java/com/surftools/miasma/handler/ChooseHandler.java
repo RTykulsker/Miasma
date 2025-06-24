@@ -65,17 +65,22 @@ public class ChooseHandler extends AbstractBaseHandler {
     if (isEmail) {
       html = html.replaceAll("<!-- TYPE-DEVICE -->", "an Email address");
       html = html.replaceAll("<!-- TYPE-LABEL -->", "Email address");
-      html = html.replaceAll("<!-- TYPE-MAX-CHARS -->", "500");
-      html = html.replaceAll("<!-- TYPE-IS-EMAIL -->", "true");
       html = html.replaceAll("<!-- TYPE-INPUT -->", "email");
+      html = html.replaceAll("JS-TYPE-IS-EMAIL", "true");
+      html = html.replaceAll("JS-TYPE-MAX-CHARS", "500");
+      html = html.replaceAll("JS-TYPE-NAME", "Email Address");
     } else {
       html = html.replaceAll("<!-- TYPE-DEVICE -->", "a cell phone");
       html = html.replaceAll("<!-- TYPE-LABEL -->", "Cell phone number (10 digits)");
-      html = html.replaceAll("<!-- TYPE-MAX-CHARS -->", "92");
-      html = html.replaceAll("<!-- TYPE-IS-EMAIL -->", "false");
       html = html.replaceAll("<!-- TYPE-INPUT -->", "tel");
+      html = html.replaceAll("JS-TYPE-IS-EMAIL", "false");
+      html = html.replaceAll("JS-TYPE-MAX-CHARS", "92");
+      html = html.replaceAll("JS-TYPE-NAME", "Cell Phone number");
     }
 
+    if (html.contains("JS-TYPE")) {
+      System.err.println(html);
+    }
     returnHtml(html);
   }
 

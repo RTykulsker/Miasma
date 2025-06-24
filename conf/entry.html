@@ -33,9 +33,10 @@
             <input type="<!-- TYPE-INPUT -->" id="address" name="address" required>
         </div>
 
-		<div>
-            <label for="shortMessage">Click to insert short message</label>
-            <select class="form-content dropdown" id="shortMessage" name="shortMessage" size="1" onchange="handle_select()">
+        <div class="form-control">
+            <label for="message">Message (click to insert short status text)</label>
+			<!-- add -->
+			<select class="form-content dropdown" id="shortMessage" name="shortMessage" size="1" onchange="handle_select()">
 				<option value="0">(none)</option>
 				<option value="27">I am safe and well.</option>
 				<option value="28">Household safe and well.</option>
@@ -52,15 +53,12 @@
 				<option value="39">All communications are down.</option>
 				<option value="40">Share this message with others.</option>
 			</select>
-        </div>
-
-        <div class="form-control">
-            <label for="message">Message</label>
+			<!-- end add-->
             <p></p><p></p>
-<textarea id="message" name="message" rows="5" cols="40" required oninput="updateCharCount();">
+<textarea id="message" name="message" rows="5" cols="38" required oninput="updateCharCount();">
 </textarea>
             <p></p>
-            <div id="charCount" class="charCount text-end text-sm">0/<!-- TYPE-MAX-CHARS --></div>
+            <div id="charCount" class="text-sm text-sm-end">0/<!-- TYPE-MAX-CHARS --></div>
   		</div>
 
 		<div class="form-control text-center">
@@ -111,10 +109,12 @@
 	}
 	
 	function isNonAscii() {
-		var message = $address.value.trim();
-		var hasNonAscii = /^[\u0000-\u007f]*$/.test(message);
-		alert("isNonAscii: " + message + ", has?: " + hasNonAscii);
-		return hasNonAscii;
+		var message = $message.value.trim();
+		var ascii = /^[ -~]+$/;
+		if ( !ascii.test( message ) ) {
+		  return true;
+		}
+		return false;
 	}
 	
 	function handle_submit() { 
