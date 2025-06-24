@@ -27,6 +27,8 @@ SOFTWARE.
 
 package com.surftools.miasma.tool;
 
+import java.net.NetworkInterface;
+
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
@@ -93,6 +95,19 @@ public class MiasmaServer {
 
     var port = cm.getAsInt(ConfigurationKey.SERVER_PORT);
     app.start(port);
+
+    var sb = new StringBuilder();
+    var interfaces = NetworkInterface.getNetworkInterfaces();
+    while (interfaces.hasMoreElements()) {
+      var ni = interfaces.nextElement();
+      var inetAddresses = ni.getInetAddresses();
+      while (inetAddresses.hasMoreElements()) {
+        var inetAddress = inetAddresses.nextElement();
+        sb.append("interface: " + ni.getDisplayName() + ", ipAddress: " + inetAddress.getHostAddress() + "\n");
+      }
+    }
+
+    logger.info("listening on various interfaces and addresses:\n" + sb.toString());
     logger.info("started on port: " + port);
   }
 
