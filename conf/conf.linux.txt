@@ -1,6 +1,9 @@
 
-app.winlink.replacementMessageAddress:RTykulsker@gmail.com
-### app.winlink.replacementMessageAddress:(null)
+app.pat.start.on.message=true
+app.pat.path=conf/pat.sh
+
+### app.winlink.replacementMessageAddress:RTykulsker@gmail.com
+app.winlink.replacementMessageAddress:(null)
 
 app.writer.csv.path:/home/bobt/Documents/miasma/csv
 app.writer.pat.path:/home/bobt/Documents/miasma/pat/mailbox

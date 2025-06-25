@@ -29,25 +29,48 @@ package com.surftools.miasma.messageService;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
 
 /**
  * do something useful with the IamSafeMessage
  */
 public class MessageProcessor {
+  private static final Logger logger = LoggerFactory.getLogger(MessageProcessor.class);
 
-  protected List<IMessageWriter> writers;
+  private List<IMessageWriter> writers;
+  private String patPathString = null;
 
   public MessageProcessor(IConfigurationManager cm) throws Exception {
     writers = List.of(new WinlinkExpressMessageWriter(cm), new PatMessageWriter(cm), new CsvMessageWriter(cm));
+
+    var patStartOnMessage = cm.getAsBoolean(ConfigurationKey.APP_PAT_START_ON_MESSAGE);
+    if (patStartOnMessage) {
+      patPathString = cm.getAsString(ConfigurationKey.APP_PAT_PATH);
+      logger.info("will start PAT on each message via: " + patPathString);
+    } else {
+      logger.info("will NOT start PAT on each message");
+    }
   }
 
   public void process(IamSafeMessage iAmSafeMessage) {
-    // TODO check for throttling,
-
     for (var writer : writers) {
       writer.write(iAmSafeMessage);
     }
+
+    if (patPathString != null) {
+      try {
+        // TODO throttle, locking
+        var processBuilder = new ProcessBuilder(patPathString);
+        processBuilder.start();
+      } catch (Exception e) {
+        logger.error("caught exception starting process for: " + patPathString + ", " + e.getMessage());
+      }
+    }
+
   }
 
 }

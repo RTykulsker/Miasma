@@ -29,6 +29,8 @@ package com.surftools.config;
 
 public enum ConfigurationKey {
 
+  APP_PAT_START_ON_MESSAGE("app.pat.start.on.message"), //
+  APP_PAT_PATH("app.pat.path"), //
   APP_WINLINK_REPLACEMENT_MESSAGE_ADDRESS("app.winlink.replacementMessageAddress"), //
   APP_WRITER_CSV_PATH("app.writer.csv.path"), //
   APP_WRITER_PAT_PATH("app.writer.pat.path"), //
