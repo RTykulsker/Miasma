@@ -57,7 +57,7 @@ public class PropertyFileConfigurationManager extends DefaultConfigurationManage
       logger.debug("using configuration file: " + configFileName);
 
       if (!new File(configFileName).exists()) {
-        autoVivify(configFileName);
+        throw new RuntimeException("Configuration file: " + configFileName + " not found");
       }
 
       properties.load(new FileInputStream(new File(configFileName)));
