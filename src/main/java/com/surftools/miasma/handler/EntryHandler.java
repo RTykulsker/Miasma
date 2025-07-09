@@ -98,8 +98,10 @@ public class EntryHandler extends AbstractBaseHandler {
       }
     }
 
-    var messageId = generateMid(String.join(",", List.of(name, address, message, now.toString())));
+    var messageId = generateMid(String.join(",", List.of(name, address, message)));
 
+    // TODO introduce the idea of an SMS Service Provider, with implementations for email, RRI, and NA7Q
+    // https://aprs.wiki/winlink-sms/
     var outboundMessageAddress = replacementAddress;
     if (outboundMessageAddress == null) {
       if (isEmail) {

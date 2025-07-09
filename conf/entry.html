@@ -58,13 +58,15 @@
 <textarea id="message" name="message" rows="5" cols="38" required oninput="updateCharCount();">
 </textarea>
             <p></p>
-            <div id="charCount" class="text-sm text-sm-end">0/<!-- TYPE-MAX-CHARS --></div>
+            <div id="charCount" class="text-sm text-sm-end" align="right">0/<!-- TYPE-MAX-CHARS --></div>
   		</div>
 
 		<div class="form-control text-center">
   			<span>
   				<button class="btn btn-primary" type="submit" onclick="return handle_submit();">Submit</button>
+				<!--
   				<button class="btn btn-secondary" type="reset" onclick="return handle_reset();">Reset</button>
+				-->
   			</span>	
 		</div>
 
@@ -110,7 +112,7 @@
 	
 	function isNonAscii() {
 		var message = $message.value.trim();
-		var ascii = /^[ -~]+$/;
+		var ascii = /^[ -~\n]+$/;
 		if ( !ascii.test( message ) ) {
 		  return true;
 		}
