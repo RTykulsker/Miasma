@@ -27,6 +27,54 @@ SOFTWARE.
 
 package com.surftools.miasma.messageService;
 
-public interface IMessageWriter {
-  public void write(IamSafeMessage message);
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * various ways to send SMS messages
+ *
+ * @author bobt
+ *
+ */
+
+public enum SmsType {
+
+  EMAIL("email"), // rewrite to send as email
+  RRI("rri"), //
+  NA7Q("na7q"), //
+  PHILIPPINES("philippines"), //
+  RAINBOW("rainbow"), // send via all other methods
+  ;
+
+  // all but rainbox
+  public static List<SmsType> RAINBOX_LIST = List.of(EMAIL, RRI, NA7Q, PHILIPPINES);
+
+  private final String name;
+
+  SmsType(String name) {
+    this.name = name;
+  }
+
+  public static final String getAllNames() {
+    var strings = new ArrayList<String>();
+    for (SmsType type : values()) {
+      strings.add(type.toString());
+    }
+    return String.join(", ", strings);
+  }
+
+  public static SmsType fromString(String string) {
+    for (SmsType key : SmsType.values()) {
+      if (key.toString().equals(string)) {
+        return key;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public String toString() {
+    return name;
+  }
+
 }

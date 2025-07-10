@@ -29,16 +29,27 @@ package com.surftools.miasma.messageService;
 
 import java.time.LocalDateTime;
 
-public record IamSafeMessage(String clientIP, String messageId, String from, String to, String message,
-    LocalDateTime dateTimeAccepted, boolean isEmail, String outboundURL) {
+/**
+ * encapsulate what we receive from client
+ */
+public record InboundMessage(LocalDateTime dateTimeAccepted, int sequenceNumber, String clientIP, //
+    String from, String to, String message) {
 
   public static String[] getHeaders() {
-    return new String[] { "Client IP", "MiD", "From", "To", "Message", "Accepted", "Is Email", "OutboundURL" };
+    return new String[] { "Date/Time", "Sequence", "Client IP", //
+        "From", "To", "Message", };
   }
 
   public String[] getValues() {
-    var dateTimeString = dateTimeAccepted.toString();
-    return new String[] { clientIP, messageId, from, to, message, dateTimeString, String.valueOf(isEmail),
-        outboundURL };
+    return new String[] { dateTimeAccepted.toString(), String.valueOf(sequenceNumber), clientIP, //
+        from, to, message };
+  }
+
+  public String digits() {
+    return to.replaceAll("[^\\d.]", "");
+  }
+
+  public boolean isEmail() {
+    return digits().length() != 10;
   }
 }

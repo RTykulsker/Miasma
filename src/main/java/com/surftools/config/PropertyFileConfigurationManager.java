@@ -94,6 +94,7 @@ public class PropertyFileConfigurationManager extends DefaultConfigurationManage
     }
   }
 
+  @SuppressWarnings("unused")
   private void autoVivify(String configFileName) throws IOException {
 
     var sb = new StringBuilder();

@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2022, Robert Tykulsker
+Copyright (c) 2025, Robert Tykulsker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,6 @@ import ch.qos.logback.core.util.StatusPrinter;
 import io.javalin.Javalin;
 
 // TODO -- documentation pass -- every class; every public method
-// TODO -- figure out why my Firefox reports timezoneOffset of 0!
 
 // http://localhost:7000/create?frequency=3598&mode=V500&call=KM6SO&grid=CN87Vm&createdBy=KM6SO
 
@@ -57,8 +56,8 @@ import io.javalin.Javalin;
 public class MiasmaServer {
   static final Logger logger = LoggerFactory.getLogger(MiasmaServer.class);
 
-  @Option(name = "--conf", usage = "name of configuration file", required = false)
-  private static String confFileName = "conf/conf.txt";
+  @Option(name = "--conf", usage = "name of configuration file", required = true)
+  private static String confFileName = null;
 
   public static final int PORT = 5000;
 
@@ -77,6 +76,7 @@ public class MiasmaServer {
       tool.run();
     } catch (Exception e) {
       System.err.println(e.getMessage());
+      e.printStackTrace();
       parser.printUsage(System.err);
     }
   }
@@ -85,13 +85,19 @@ public class MiasmaServer {
     logger.info("setting up server");
 
     var cm = new PropertyFileConfigurationManager(confFileName, ConfigurationKey.values());
-    var chooseHandler = new ChooseHandler(cm);
     var app = Javalin.create();
-    app.get("/", new IndexHandler(cm));
-    app.get("/index", new IndexHandler(cm));
+
+    var indexHandler = new IndexHandler(cm);
+    app.get("/", indexHandler);
+    app.get("/index", indexHandler);
+
+    var chooseHandler = new ChooseHandler(cm);
     app.get("/chooseEmail", chooseHandler);
     app.get("/chooseSMS", chooseHandler);
-    app.get("/entry", new EntryHandler(cm));
+
+    var entryHandler = new EntryHandler(cm);
+    app.get("/entry", entryHandler);
+    app.post("/entry", entryHandler);
 
     var port = cm.getAsInt(ConfigurationKey.SERVER_PORT);
     app.start(port);

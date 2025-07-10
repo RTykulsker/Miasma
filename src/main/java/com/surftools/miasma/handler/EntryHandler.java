@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2022,2025, Robert Tykulsker
+Copyright (c) 2025, Robert Tykulsker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -27,19 +27,20 @@ SOFTWARE.
 
 package com.surftools.miasma.handler;
 
-import java.security.MessageDigest;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.codec.binary.Base32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
-import com.surftools.miasma.messageService.IamSafeMessage;
-import com.surftools.miasma.messageService.MessageProcessor;
+import com.surftools.miasma.messageService.InboundMessage;
+import com.surftools.miasma.messageService.MessageWriter;
 
 import io.javalin.http.Context;
 import io.javalin.http.HttpCode;
@@ -52,19 +53,33 @@ import io.javalin.http.HttpCode;
 public class EntryHandler extends AbstractBaseHandler {
   private static final Logger logger = LoggerFactory.getLogger(EntryHandler.class);
 
-  private String replacementAddress = null;
-  private final int MAX_SMS_CHAR_COUNT = 140;
-  private final MessageProcessor mp;
+  private AtomicInteger sequenceGenerator;
+  private Path sequencePath;
+
+  private MessageWriter messageWriter;
 
   public EntryHandler(IConfigurationManager cm) throws Exception {
     super(cm, logger, ConfigurationKey.TEMPLATE_THANKS_FILE_NAME);
 
-    replacementAddress = cm.getAsString(ConfigurationKey.APP_WINLINK_REPLACEMENT_MESSAGE_ADDRESS);
-
-    if (replacementAddress.equals("(null)")) {
-      replacementAddress = null;
+    var seqPathString = cm.getAsString(ConfigurationKey.SERVER_SEQUENCE_GENERATOR_PATH);
+    if (seqPathString == null) {
+      throw new RuntimeException(
+          "No value for configuration: " + ConfigurationKey.SERVER_SEQUENCE_GENERATOR_PATH.name());
     }
-    mp = new MessageProcessor(cm);
+    sequencePath = Path.of(seqPathString);
+    var seqParent = sequencePath.getParent();
+    var seqDir = seqParent.toFile();
+    if (!seqDir.exists()) {
+      Files.createDirectories(Path.of(seqDir.toString()));
+      sequenceGenerator = new AtomicInteger(0);
+    } else {
+      var seqString = Files.readString(sequencePath).trim();
+      sequenceGenerator = new AtomicInteger(Integer.valueOf(seqString));
+    }
+    logger.info("Sequence Generator set at: " + sequenceGenerator.get());
+
+    messageWriter = new MessageWriter(cm);
+
   }
 
   @Override
@@ -72,74 +87,56 @@ public class EntryHandler extends AbstractBaseHandler {
     super.handle(ctx);
 
     var now = LocalDateTime.now();
-
-    var explanations = new ArrayList<String>();
+    var sequenceNumber = sequenceGenerator.incrementAndGet();
+    Files.writeString(sequencePath, String.valueOf(sequenceNumber));
 
     var name = getParam("name");
     var address = getParam("address");
     var message = getParam("message");
-    var digits = address.replaceAll("[^\\d.]", "");
-    var isEmail = digits.length() != 10;
 
-    logger.info("got create request, name: " + name + ", address: " + address + ", message: " + message);
+    logger.info("got request name: " + name + ", address: " + address + ", message: " + message);
 
-    // extra/repeated validation
-    if (isEmail) {
+    var inboundMessage = new InboundMessage(now, sequenceNumber, ctx.req.getRemoteAddr(), //
+        name, address, message);
 
-    } else {
-      digits = address.replaceAll("[^\\d.]", "");
-
-      if (digits.length() != 10) {
-        explanations.add("expected 10 digits in phone number: " + address);
-      }
-      var charCount = "From ".length() + name.length() + "MM/YY ONE WAY MSG\n".length() + message.length();
-      if (charCount > MAX_SMS_CHAR_COUNT) {
-        explanations.add("Total text for SMS message too long");
-      }
-    }
-
-    var messageId = generateMid(String.join(",", List.of(name, address, message)));
-
-    // TODO introduce the idea of an SMS Service Provider, with implementations for email, RRI, and NA7Q
-    // https://aprs.wiki/winlink-sms/
-    var outboundMessageAddress = replacementAddress;
-    if (outboundMessageAddress == null) {
-      if (isEmail) {
-        outboundMessageAddress = address;
-      } else {
-        outboundMessageAddress = digits + "@sms.radiorelay.org";
-      }
-    }
-
+    var explanations = extraValidation(inboundMessage);
     if (explanations.size() > 0) {
       returnResult(HttpCode.NOT_ACCEPTABLE, "Bad input:\n" + String.join("\n", explanations));
     }
 
-    var iAmSafeMessage = new IamSafeMessage(ctx.req.getRemoteAddr(), messageId, name, address, message, now, isEmail,
-        outboundMessageAddress);
-
-    mp.process(iAmSafeMessage);
+    // var outboundMessages = makeOutboundMessages(inboundMessage);
+    // messageWriter.writeOutboundMessages(outboundMessages);
+    messageWriter.write(inboundMessage);
 
     var html = getTemplateHtml();
-    html = html.replaceAll("<!-- FROM -->", iAmSafeMessage.from());
-    html = html.replaceAll("<!-- TO -->", iAmSafeMessage.to());
-    html = html.replaceAll("<!-- MESSAGE -->", iAmSafeMessage.message());
+    html = html.replaceAll("<!-- FROM -->", inboundMessage.from());
+    html = html.replaceAll("<!-- TO -->", inboundMessage.to());
+    html = html.replaceAll("<!-- MESSAGE -->", inboundMessage.message());
     returnHtml(html);
   }
 
-  public static String generateMid(String string) {
-    try {
-      MessageDigest md = MessageDigest.getInstance("MD5");
-      String stringToHash = string + System.nanoTime();
-      md.update(stringToHash.getBytes());
-      byte[] digest = md.digest();
-      Base32 base32 = new Base32();
-      String encodedString = base32.encodeToString(digest);
-      String subString = encodedString.substring(0, 12);
-      return subString;
-    } catch (Exception e) {
-      throw new RuntimeException("could not generate messageId: " + e.getMessage());
-    }
+  // private List<OutboundMessage> makeOutboundMessages(InboundMessage inboundMessage) {
+  // var list = new ArrayList<OutboundMessage>();
+  // if (inboundMessage.isEmail()) {
+  // var outboundMessage = new OutboundMessage(inboundMessage, smsType);
+  // list.add(outboundMessage);
+  // return list;
+  // }
+  //
+  // if (smsType != SmsType.RAINBOW) {
+  // list.add(new OutboundMessage(inboundMessage, smsType));
+  // } else {
+  // for (var type : SmsType.RAINBOX_LIST) {
+  // list.add(new OutboundMessage(inboundMessage, type));
+  // }
+  // }
+  //
+  // return list;
+  // }
+
+  private List<String> extraValidation(InboundMessage inboundMessage) {
+    var explanations = new ArrayList<String>();
+    return explanations;
   }
 
 }

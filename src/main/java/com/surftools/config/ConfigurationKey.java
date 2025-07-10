@@ -29,15 +29,16 @@ package com.surftools.config;
 
 public enum ConfigurationKey {
 
-  APP_PAT_START_ON_MESSAGE("app.pat.start.on.message"), //
-  APP_PAT_PATH("app.pat.path"), //
-  APP_WINLINK_REPLACEMENT_MESSAGE_ADDRESS("app.winlink.replacementMessageAddress"), //
   APP_WRITER_CSV_PATH("app.writer.csv.path"), //
   APP_WRITER_PAT_PATH("app.writer.pat.path"), //
   APP_WRITER_WINLINK_EXPRESS_PATH("app.writer.winlinkExpress.path"), //
   APP_WRITER_WINLINK_EXPRESS_SENDER("app.writer.winlinkExpress.sender"), //
+  APP_WRITER_SMS_REPLACEMENT_EMAIL_ADDRESS("app.writer.sms.replacementEmailAddress"), //
+
+  APP_SMS_TYPE("app.sms.type"), //
 
   SERVER_PORT("server.port", "5000"), //
+  SERVER_SEQUENCE_GENERATOR_PATH("server.sequenceGenerator.path"),
 
   TEMPLATE_CACHE_FILES("template.cache.files", "true"), //
   TEMPLATE_INDEX_FILE_NAME("template.index.fileName", "conf/index.html"), //
