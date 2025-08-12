@@ -27,15 +27,8 @@ SOFTWARE.
 
 package com.surftools.miasma.batch;
 
-/**
- * represents an record read from spreadsheet; may not be "sendable" as is (non-email, non-sms, multiple sms, not
- * complete
- */
-public record InputRecord(String batchId, String fileName, String tabName, String rowNumber, String status, //
-    String from, String to, String text) {
+public interface IBatchProcessor {
 
-  public InputRecord update(InputStatus newStatus, String address) {
-    return new InputRecord(batchId, fileName, tabName, rowNumber, newStatus.name(), from, address, text);
-  }
+  public ProcessResult process();
 
 }

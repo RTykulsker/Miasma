@@ -27,15 +27,15 @@ SOFTWARE.
 
 package com.surftools.miasma.batch;
 
-/**
- * represents an record read from spreadsheet; may not be "sendable" as is (non-email, non-sms, multiple sms, not
- * complete
- */
-public record InputRecord(String batchId, String fileName, String tabName, String rowNumber, String status, //
-    String from, String to, String text) {
+import java.util.List;
 
-  public InputRecord update(InputStatus newStatus, String address) {
-    return new InputRecord(batchId, fileName, tabName, rowNumber, newStatus.name(), from, address, text);
+public record ProcessResult(List<InputRecord> okList, List<InputRecord> errorList, CounterContext counterContext) {
+
+  public ProcessResult merge(ProcessResult child) {
+    okList.addAll(child.okList);
+    errorList.addAll(child.errorList);
+    counterContext.accumulate(child.counterContext);
+    return new ProcessResult(okList, errorList, counterContext);
   }
 
 }
