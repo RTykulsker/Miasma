@@ -45,8 +45,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVWriter;
-import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
+import com.surftools.config.MiasmaKey;
+import com.surftools.miasma.web.InboundMessage;
 
 public class MessageWriter {
   private static final Logger logger = LoggerFactory.getLogger(MessageWriter.class);
@@ -74,12 +75,12 @@ public class MessageWriter {
   public MessageWriter(IConfigurationManager cm) throws Exception {
     this.cm = cm;
 
-    sender = cm.getAsString(ConfigurationKey.APP_WRITER_WINLINK_EXPRESS_SENDER);
+    sender = cm.getAsString(MiasmaKey.APP_WRITER_WINLINK_EXPRESS_SENDER);
     if (sender == null) {
-      throw new RuntimeException("must specify " + ConfigurationKey.APP_WRITER_WINLINK_EXPRESS_SENDER);
+      throw new RuntimeException("must specify " + MiasmaKey.APP_WRITER_WINLINK_EXPRESS_SENDER);
     }
 
-    var smsTypeString = cm.getAsString(ConfigurationKey.APP_SMS_TYPE, SmsType.RRI.toString());
+    var smsTypeString = cm.getAsString(MiasmaKey.APP_SMS_TYPE, SmsType.RRI.toString());
     smsType = SmsType.fromString(smsTypeString);
     if (smsType == null) {
       throw new RuntimeException("Unsupported SmsType: " + smsTypeString);
@@ -87,13 +88,13 @@ public class MessageWriter {
       logger.info("SMS provider: " + smsType.toString());
     }
 
-    var replacementAddress = cm.getAsString(ConfigurationKey.APP_WRITER_SMS_REPLACEMENT_EMAIL_ADDRESS);
+    var replacementAddress = cm.getAsString(MiasmaKey.APP_WRITER_SMS_REPLACEMENT_EMAIL_ADDRESS);
     if (replacementAddress.equals("(null)") && (smsType == SmsType.EMAIL || smsType == SmsType.RAINBOW)) {
       throw new RuntimeException("SmsType set to EMAIL, but replacement address set to (null)");
     }
     OutboundMessage.setSmsReplacementEmailAddress(replacementAddress);
 
-    var patPathString = cm.getAsString(ConfigurationKey.APP_WRITER_PAT_PATH);
+    var patPathString = cm.getAsString(MiasmaKey.APP_WRITER_PAT_PATH);
     if (patPathString == null) {
       isPatEnabled = false;
     } else {
@@ -106,7 +107,7 @@ public class MessageWriter {
       }
     }
 
-    var winlinExpressPathString = cm.getAsString(ConfigurationKey.APP_WRITER_WINLINK_EXPRESS_PATH);
+    var winlinExpressPathString = cm.getAsString(MiasmaKey.APP_WRITER_WINLINK_EXPRESS_PATH);
     if (winlinExpressPathString == null) {
     } else {
       isWinlinkExpresEnabled = true;
@@ -114,7 +115,7 @@ public class MessageWriter {
       Files.createDirectories(winlinkExpressPath);
     }
 
-    var csvOutputPathString = cm.getAsString(ConfigurationKey.APP_WRITER_CSV_PATH);
+    var csvOutputPathString = cm.getAsString(MiasmaKey.APP_WRITER_CSV_PATH);
     if (csvOutputPathString == null) {
       isCsvEnabled = false;
     } else {

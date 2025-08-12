@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasma.messageService;
+package com.surftools.miasma.web;
 
 import java.time.LocalDateTime;
 

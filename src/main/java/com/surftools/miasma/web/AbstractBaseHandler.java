@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasma.handler;
+package com.surftools.miasma.web;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,8 +33,8 @@ import java.nio.file.Path;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 
-import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
+import com.surftools.config.MiasmaKey;
 
 import io.javalin.http.ContentType;
 import io.javalin.http.Context;
@@ -50,17 +50,17 @@ public abstract class AbstractBaseHandler implements Handler {
   protected String resource;
   protected Context ctx;
 
-  protected ConfigurationKey templateFileNameKey;
+  protected MiasmaKey templateFileNameKey;
   protected String rawHtml;
 
-  public AbstractBaseHandler(IConfigurationManager cm, Logger logger, ConfigurationKey templateFileNameKey)
+  public AbstractBaseHandler(IConfigurationManager cm, Logger logger, MiasmaKey templateFileNameKey)
       throws Exception {
     this.cm = cm;
     this.logger = logger;
     this.commonLogger = new CommonLogger();
 
     this.templateFileNameKey = templateFileNameKey;
-    if (cm.getAsBoolean(ConfigurationKey.TEMPLATE_CACHE_FILES)) {
+    if (cm.getAsBoolean(MiasmaKey.TEMPLATE_CACHE_FILES)) {
       rawHtml = Files.readString(Path.of(cm.getAsString(templateFileNameKey)));
     }
   }

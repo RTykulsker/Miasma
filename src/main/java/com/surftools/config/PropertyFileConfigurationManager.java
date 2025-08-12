@@ -51,7 +51,7 @@ public class PropertyFileConfigurationManager extends DefaultConfigurationManage
 
   private static final Logger logger = LoggerFactory.getLogger(PropertyFileConfigurationManager.class);
 
-  public PropertyFileConfigurationManager(String configFileName, ConfigurationKey[] values) throws Exception {
+  public PropertyFileConfigurationManager(String configFileName, MiasmaKey[] values) throws Exception {
     Properties properties = new Properties();
     try {
       logger.debug("using configuration file: " + configFileName);
@@ -68,7 +68,7 @@ public class PropertyFileConfigurationManager extends DefaultConfigurationManage
       while (propertyKeys.hasMoreElements()) {
 
         String propertyKey = propertyKeys.nextElement().toString();
-        ConfigurationKey configurationKey = fromString(propertyKey);
+        MiasmaKey configurationKey = fromString(propertyKey);
 
         if (configurationKey == null) {
           propertiesWithoutConfigurationKeys.add(propertyKey);
@@ -99,7 +99,7 @@ public class PropertyFileConfigurationManager extends DefaultConfigurationManage
 
     var sb = new StringBuilder();
 
-    for (ConfigurationKey key : ConfigurationKey.values()) {
+    for (MiasmaKey key : MiasmaKey.values()) {
       sb.append(key.toString() + ":" + key.defaultValue() + "\n");
     }
     var string = sb.toString();

@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2019, Robert Tykulsker
+Copyright (c) 2025, Robert Tykulsker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,22 +25,16 @@ SOFTWARE.
 
 */
 
-package com.surftools.config;
+package com.surftools.miasma.batch;
 
-public interface IConfigurationManager {
-
-  public String getAsString(MiasmaKey key);
-
-  public String getAsString(MiasmaKey key, String defaultValue);
-
-  public int getAsInt(MiasmaKey key);
-
-  public int getAsInt(MiasmaKey key, Integer defaultValue);
-
-  public boolean getAsBoolean(MiasmaKey key);
-
-  public boolean getAsBoolean(MiasmaKey key, Boolean defaultValue);
-
-  public String get(MiasmaKey key);
-
+/**
+ * represents status of a row read from a spreadsheet file
+ */
+public enum InputStatus {
+  OK, OK_EMAIL, OK_SMS, //
+  HEADER, //
+  NO_FROM_FIELD, NO_TO_FIELD, NO_TEXT_FIELD, //
+  NO_FROM_AND_TO_FIELDS, NO_TO_AND_TEXT_FIELDS, NO_FROM_AND_TEXT_FIELDS, //
+  NO_FROM_TO_AND_TEXT_FIELDS, //
+  CANT_PARSE_TO_FIELDS, TEXT_TOO_LONG_FOR_SMS
 }

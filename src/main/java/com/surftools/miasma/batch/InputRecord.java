@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2019, Robert Tykulsker
+Copyright (c) 2025, Robert Tykulsker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,22 +25,13 @@ SOFTWARE.
 
 */
 
-package com.surftools.config;
+package com.surftools.miasma.batch;
 
-public interface IConfigurationManager {
-
-  public String getAsString(MiasmaKey key);
-
-  public String getAsString(MiasmaKey key, String defaultValue);
-
-  public int getAsInt(MiasmaKey key);
-
-  public int getAsInt(MiasmaKey key, Integer defaultValue);
-
-  public boolean getAsBoolean(MiasmaKey key);
-
-  public boolean getAsBoolean(MiasmaKey key, Boolean defaultValue);
-
-  public String get(MiasmaKey key);
+/**
+ * represents an record read from spreadsheet; may not be "sendable" as is (non-email, non-sms, multiple sms, not
+ * complete
+ */
+public record InputRecord(String batchId, String fileName, String tabName, String rowNumber, String status, //
+    String from, String to, String text) {
 
 }

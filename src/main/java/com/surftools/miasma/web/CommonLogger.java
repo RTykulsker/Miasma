@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasma.handler;
+package com.surftools.miasma.web;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

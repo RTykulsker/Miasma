@@ -35,6 +35,8 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base32;
 
+import com.surftools.miasma.web.InboundMessage;
+
 public class OutboundMessage {
   protected static final DateTimeFormatter BODY_DTF = DateTimeFormatter.ofPattern("M/dd");
   protected static final DateTimeFormatter FILE_DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");

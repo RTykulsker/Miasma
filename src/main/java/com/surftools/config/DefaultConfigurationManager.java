@@ -31,23 +31,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DefaultConfigurationManager implements IConfigurationManager {
-  protected Map<ConfigurationKey, String> map;
-  protected ConfigurationKey[] values = null;
+  protected Map<MiasmaKey, String> map;
+  protected MiasmaKey[] values = null;
 
   public DefaultConfigurationManager() {
     map = new HashMap<>();
   }
 
-  public void setValues(ConfigurationKey[] values) {
+  public void setValues(MiasmaKey[] values) {
     this.values = values;
   }
 
-  protected ConfigurationKey fromString(String string) {
+  protected MiasmaKey fromString(String string) {
     if (values == null) {
       throw new RuntimeException("Values not specified");
     }
 
-    for (ConfigurationKey key : values) {
+    for (MiasmaKey key : values) {
       if (key.toString().equals(string)) {
         return key;
       }
@@ -56,12 +56,12 @@ public class DefaultConfigurationManager implements IConfigurationManager {
   }
 
   @Override
-  public String getAsString(ConfigurationKey key) {
+  public String getAsString(MiasmaKey key) {
     return getAsString(key, key.defaultValue());
   }
 
   @Override
-  public String getAsString(ConfigurationKey key, String defaultValue) {
+  public String getAsString(MiasmaKey key, String defaultValue) {
     String stringValue = map.get(key);
     if (stringValue == null) {
       stringValue = defaultValue.toString();
@@ -71,12 +71,12 @@ public class DefaultConfigurationManager implements IConfigurationManager {
   }
 
   @Override
-  public int getAsInt(ConfigurationKey key) {
+  public int getAsInt(MiasmaKey key) {
     return getAsInt(key, Integer.valueOf(key.defaultValue()));
   }
 
   @Override
-  public int getAsInt(ConfigurationKey key, Integer defaultValue) {
+  public int getAsInt(MiasmaKey key, Integer defaultValue) {
     String stringValue = map.get(key);
     if (stringValue == null) {
       stringValue = defaultValue.toString();
@@ -86,12 +86,12 @@ public class DefaultConfigurationManager implements IConfigurationManager {
   }
 
   @Override
-  public boolean getAsBoolean(ConfigurationKey key) {
+  public boolean getAsBoolean(MiasmaKey key) {
     return getAsBoolean(key, Boolean.valueOf(key.defaultValue()));
   }
 
   @Override
-  public boolean getAsBoolean(ConfigurationKey key, Boolean defaultValue) {
+  public boolean getAsBoolean(MiasmaKey key, Boolean defaultValue) {
     String stringValue = map.get(key);
     if (stringValue == null) {
       if (defaultValue == null) {
@@ -110,7 +110,7 @@ public class DefaultConfigurationManager implements IConfigurationManager {
   }
 
   @Override
-  public String get(ConfigurationKey key) {
+  public String get(MiasmaKey key) {
     return map.get(key);
   }
 

@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2019, Robert Tykulsker
+Copyright (c) 2022, Robert Tykulsker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,22 +25,28 @@ SOFTWARE.
 
 */
 
-package com.surftools.config;
+package com.surftools.miasma.web;
 
-public interface IConfigurationManager {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-  public String getAsString(MiasmaKey key);
+import com.surftools.config.IConfigurationManager;
+import com.surftools.config.MiasmaKey;
 
-  public String getAsString(MiasmaKey key, String defaultValue);
+import io.javalin.http.Context;
 
-  public int getAsInt(MiasmaKey key);
+public class IndexHandler extends AbstractBaseHandler {
+  private static final Logger logger = LoggerFactory.getLogger(IndexHandler.class);
 
-  public int getAsInt(MiasmaKey key, Integer defaultValue);
+  public IndexHandler(IConfigurationManager cm) throws Exception {
+    super(cm, logger, MiasmaKey.TEMPLATE_INDEX_FILE_NAME);
+  }
 
-  public boolean getAsBoolean(MiasmaKey key);
+  @Override
+  public void handle(Context ctx) throws Exception {
+    super.handle(ctx);
 
-  public boolean getAsBoolean(MiasmaKey key, Boolean defaultValue);
-
-  public String get(MiasmaKey key);
+    returnHtml(getTemplateHtml());
+  } // end handle()
 
 }

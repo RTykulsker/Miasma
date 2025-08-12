@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2022, Robert Tykulsker
+Copyright (c) 2025, Robert Tykulsker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,28 +25,8 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasma.handler;
+package com.surftools.utils.counter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.surftools.config.ConfigurationKey;
-import com.surftools.config.IConfigurationManager;
-
-import io.javalin.http.Context;
-
-public class IndexHandler extends AbstractBaseHandler {
-  private static final Logger logger = LoggerFactory.getLogger(IndexHandler.class);
-
-  public IndexHandler(IConfigurationManager cm) throws Exception {
-    super(cm, logger, ConfigurationKey.TEMPLATE_INDEX_FILE_NAME);
-  }
-
-  @Override
-  public void handle(Context ctx) throws Exception {
-    super.handle(ctx);
-
-    returnHtml(getTemplateHtml());
-  } // end handle()
-
+public enum CounterType {
+  ASCENDING_KEY, DESCENDING_KEY, ASCENDING_COUNT, DESCENDING_COUNT;
 }

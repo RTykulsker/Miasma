@@ -27,7 +27,7 @@ SOFTWARE.
 
 package com.surftools.config;
 
-public enum ConfigurationKey {
+public enum MiasmaKey {
 
   APP_WRITER_CSV_PATH("app.writer.csv.path"), //
   APP_WRITER_PAT_PATH("app.writer.pat.path"), //
@@ -36,6 +36,8 @@ public enum ConfigurationKey {
   APP_WRITER_SMS_REPLACEMENT_EMAIL_ADDRESS("app.writer.sms.replacementEmailAddress"), //
 
   APP_SMS_TYPE("app.sms.type"), //
+
+  BATCH_INBOX_PATH("batch.inbox.path"), //
 
   SERVER_PORT("server.port", "5000"), //
   SERVER_SEQUENCE_GENERATOR_PATH("server.sequenceGenerator.path"),
@@ -49,18 +51,18 @@ public enum ConfigurationKey {
   private final String key;
   private final String defaultValue;
 
-  private ConfigurationKey(String key) {
+  private MiasmaKey(String key) {
     this.key = key;
     this.defaultValue = null;
   }
 
-  private ConfigurationKey(String key, String defaultValue) {
+  private MiasmaKey(String key, String defaultValue) {
     this.key = key;
     this.defaultValue = defaultValue;
   }
 
-  public static ConfigurationKey fromString(String string) {
-    for (ConfigurationKey key : ConfigurationKey.values()) {
+  public static MiasmaKey fromString(String string) {
+    for (MiasmaKey key : MiasmaKey.values()) {
       if (key.toString().equals(string)) {
         return key;
       }

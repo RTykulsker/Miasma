@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasma.handler;
+package com.surftools.miasma.web;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,9 +37,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
-import com.surftools.miasma.messageService.InboundMessage;
+import com.surftools.config.MiasmaKey;
 import com.surftools.miasma.messageService.MessageWriter;
 
 import io.javalin.http.Context;
@@ -59,12 +58,12 @@ public class EntryHandler extends AbstractBaseHandler {
   private MessageWriter messageWriter;
 
   public EntryHandler(IConfigurationManager cm) throws Exception {
-    super(cm, logger, ConfigurationKey.TEMPLATE_THANKS_FILE_NAME);
+    super(cm, logger, MiasmaKey.TEMPLATE_THANKS_FILE_NAME);
 
-    var seqPathString = cm.getAsString(ConfigurationKey.SERVER_SEQUENCE_GENERATOR_PATH);
+    var seqPathString = cm.getAsString(MiasmaKey.SERVER_SEQUENCE_GENERATOR_PATH);
     if (seqPathString == null) {
       throw new RuntimeException(
-          "No value for configuration: " + ConfigurationKey.SERVER_SEQUENCE_GENERATOR_PATH.name());
+          "No value for configuration: " + MiasmaKey.SERVER_SEQUENCE_GENERATOR_PATH.name());
     }
     sequencePath = Path.of(seqPathString);
     var seqParent = sequencePath.getParent();

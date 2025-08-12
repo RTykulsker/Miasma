@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.surftools</groupId>
 	<artifactId>miasma</artifactId>
-	<version>0.0.2</version>
+	<version>0.2.0</version>
 
 	<name>Miasma</name>
 	<url>http://maven.apache.org</url>
@@ -22,7 +22,8 @@
 		<javalin.version>4.4.0</javalin.version>
 		<logback.version>1.2.7</logback.version>
 		<opencsv.version>5.5</opencsv.version>
-
+		<poi.version>4.1.2</poi.version>
+		
 		<junit.version>4.13.1</junit.version>
 	</properties>
 
@@ -76,6 +77,18 @@
 		</dependency>
 
 		<dependency>
+    		<groupId>org.apache.poi</groupId>
+    		<artifactId>poi</artifactId>
+    		<version>${poi.version}</version>
+		</dependency>
+
+		<dependency>
+    		<groupId>org.apache.poi</groupId>
+    		<artifactId>poi-ooxml</artifactId>
+    		<version>${poi.version}</version>
+		</dependency>
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
@@ -125,8 +138,12 @@
 					</platforms>					
 					<programs>
 						<program>
-							<mainClass>com.surftools.miasma.tool.MiasmaServer</mainClass>
+							<mainClass>com.surftools.miasma.web.MiasmaServer</mainClass>
 							<id>miasmaServer</id>
+						</program>
+						<program>
+							<mainClass>com.surftools.miasma.batch.MiasmaBatchTool</mainClass>
+							<id>miasmaBatch</id>
 						</program>
 					</programs>
 				</configuration>

@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasma.tool;
+package com.surftools.miasma.web;
 
 import java.net.NetworkInterface;
 
@@ -34,11 +34,8 @@ import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.surftools.config.ConfigurationKey;
+import com.surftools.config.MiasmaKey;
 import com.surftools.config.PropertyFileConfigurationManager;
-import com.surftools.miasma.handler.ChooseHandler;
-import com.surftools.miasma.handler.EntryHandler;
-import com.surftools.miasma.handler.IndexHandler;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
@@ -84,7 +81,7 @@ public class MiasmaServer {
   public void run() throws Exception {
     logger.info("setting up server");
 
-    var cm = new PropertyFileConfigurationManager(confFileName, ConfigurationKey.values());
+    var cm = new PropertyFileConfigurationManager(confFileName, MiasmaKey.values());
     var app = Javalin.create();
 
     var indexHandler = new IndexHandler(cm);
@@ -99,7 +96,7 @@ public class MiasmaServer {
     app.get("/entry", entryHandler);
     app.post("/entry", entryHandler);
 
-    var port = cm.getAsInt(ConfigurationKey.SERVER_PORT);
+    var port = cm.getAsInt(MiasmaKey.SERVER_PORT);
     app.start(port);
 
     var sb = new StringBuilder();

@@ -25,13 +25,13 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasma.handler;
+package com.surftools.miasma.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.surftools.config.ConfigurationKey;
 import com.surftools.config.IConfigurationManager;
+import com.surftools.config.MiasmaKey;
 
 import io.javalin.http.Context;
 
@@ -47,7 +47,7 @@ public class ChooseHandler extends AbstractBaseHandler {
   private static final Logger logger = LoggerFactory.getLogger(ChooseHandler.class);
 
   public ChooseHandler(IConfigurationManager cm) throws Exception {
-    super(cm, logger, ConfigurationKey.TEMPLATE_ENTRY_FILE_NAME);
+    super(cm, logger, MiasmaKey.TEMPLATE_ENTRY_FILE_NAME);
   }
 
   @Override
