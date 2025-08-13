@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasma.messageService;
+package com.surftools.miasma.webMessageService;
 
 import java.security.MessageDigest;
 import java.time.format.DateTimeFormatter;
@@ -37,7 +37,7 @@ import org.apache.commons.codec.binary.Base32;
 
 import com.surftools.miasma.web.InboundMessage;
 
-public class OutboundMessage {
+public class WebOutboundMessage {
   protected static final DateTimeFormatter BODY_DTF = DateTimeFormatter.ofPattern("M/dd");
   protected static final DateTimeFormatter FILE_DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
   protected static final DateTimeFormatter MESSAGE_TIME_DTF = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
@@ -53,7 +53,7 @@ public class OutboundMessage {
 
   static String smsEmailAddress = null;
 
-  public OutboundMessage(InboundMessage inMessage, SmsType smsType) {
+  public WebOutboundMessage(InboundMessage inMessage, SmsType smsType) {
     this.inMessage = inMessage;
     this.smsType = smsType;
 

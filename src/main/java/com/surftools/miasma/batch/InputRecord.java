@@ -34,6 +34,14 @@ package com.surftools.miasma.batch;
 public record InputRecord(String batchId, String fileName, String tabName, String rowNumber, InputStatus status, //
     String from, String to, String text) {
 
+  public static String[] getHeaders() {
+    return new String[] { "Batch", "File", "Tab", "Row", "Status", "From", "To", "Message" };
+  }
+
+  public String[] getValues() {
+    return new String[] { batchId, fileName, tabName, rowNumber, status.name(), from, to, text };
+  }
+
   public InputRecord update(InputStatus newStatus, String newFrom, String newTo, String newText) {
     return new InputRecord(batchId, fileName, tabName, rowNumber, newStatus, newFrom, newTo, newText);
   }

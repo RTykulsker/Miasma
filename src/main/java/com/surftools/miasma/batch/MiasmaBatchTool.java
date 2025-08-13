@@ -30,6 +30,7 @@ package com.surftools.miasma.batch;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import com.surftools.config.IConfigurationManager;
 import com.surftools.config.MiasmaKey;
 import com.surftools.config.PropertyFileConfigurationManager;
+import com.surftools.miasma.batchMessageService.BatchMessageWriter;
 import com.surftools.miasma.web.MiasmaServer;
 
 import ch.qos.logback.classic.LoggerContext;
@@ -91,9 +93,14 @@ public class MiasmaBatchTool {
       logger.info("conf file: " + confFileName);
       logger.info("inboxPathName: " + inboxPathname);
 
-      var counterContext = processFilesInFolder(inboxFolder);
-      ++counterContext.folderCount;
-      logger.info(counterContext.toString());
+      var processResult = processFilesInFolder(inboxFolder);
+      ++processResult.counterContext().folderCount;
+
+      var okMessages = processResult.okList();
+      var messageWriter = new BatchMessageWriter(cm);
+      messageWriter.write(okMessages);
+
+      logger.info(processResult.counterContext().toString());
     } catch (Exception e) {
       logger.error("Exception running batchId: " + batchId + ", " + e.getMessage());
       e.printStackTrace();
@@ -101,48 +108,49 @@ public class MiasmaBatchTool {
     logger.info("end run");
   }
 
-  public CounterContext processFilesInFolder(File folder) {
+  public ProcessResult processFilesInFolder(File folder) {
     if (folder == null) {
       logger.warn("null folder");
-      return new CounterContext(batchId);
+      return null;
     }
 
     if (!folder.exists()) {
       logger.warn("folder: " + folder.getName() + " doesn't exist!");
-      return new CounterContext(batchId);
+      return null;
     }
 
     var files = Arrays.asList(folder.listFiles());
     if (files == null || files.size() == 0) {
       logger.warn("folder: " + folder.getName() + ", no files!");
-      return new CounterContext(batchId);
+      return null;
     }
 
     logger.info("processing folder: " + folder.getName());
     Collections.sort(files);
-    var folderCounterContext = new CounterContext(batchId);
+    var folderProcessResult = new ProcessResult(new ArrayList<InputRecord>(), new ArrayList<InputRecord>(),
+        new CounterContext(batchId));
     for (File file : files) {
       if (file.isDirectory()) {
-        var subFolderCounterContext = processFilesInFolder(file); // Recursive call
-        folderCounterContext.merge(subFolderCounterContext);
+        var subFolderProcessResult = processFilesInFolder(file); // Recursive call
+        folderProcessResult.merge(subFolderProcessResult);
       } else if (file.getName().toLowerCase().endsWith(".xlsx") || file.getName().toLowerCase().endsWith(".xls")) {
         var excelProcessor = new ExcelBatchProcessor(batchId, file, cm);
         var results = excelProcessor.process();
         if (results != null && results.counterContext() != null) {
-          folderCounterContext.merge(results.counterContext());
+          folderProcessResult.merge(results);
         }
       } else if (file.getName().toLowerCase().endsWith(".csv")) {
         var csvProcessor = new CsvBatchProcessor(batchId, file, cm);
         var results = csvProcessor.process();
         if (results != null && results.counterContext() != null) {
-          folderCounterContext.merge(results.counterContext());
+          folderProcessResult.merge(results);
         }
       } else {
         logger.warn("file: " + file.getName() + " unsupported and ignored");
       }
     }
 
-    return folderCounterContext;
+    return folderProcessResult;
   }
 
 }

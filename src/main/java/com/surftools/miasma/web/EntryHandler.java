@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.surftools.config.IConfigurationManager;
 import com.surftools.config.MiasmaKey;
-import com.surftools.miasma.messageService.MessageWriter;
+import com.surftools.miasma.webMessageService.WebMessageWriter;
 
 import io.javalin.http.Context;
 import io.javalin.http.HttpCode;
@@ -55,7 +55,7 @@ public class EntryHandler extends AbstractBaseHandler {
   private AtomicInteger sequenceGenerator;
   private Path sequencePath;
 
-  private MessageWriter messageWriter;
+  private WebMessageWriter messageWriter;
 
   public EntryHandler(IConfigurationManager cm) throws Exception {
     super(cm, logger, MiasmaKey.TEMPLATE_THANKS_FILE_NAME);
@@ -77,7 +77,7 @@ public class EntryHandler extends AbstractBaseHandler {
     }
     logger.info("Sequence Generator set at: " + sequenceGenerator.get());
 
-    messageWriter = new MessageWriter(cm);
+    messageWriter = new WebMessageWriter(cm);
 
   }
 

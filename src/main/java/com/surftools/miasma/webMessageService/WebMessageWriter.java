@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasma.messageService;
+package com.surftools.miasma.webMessageService;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,8 +49,8 @@ import com.surftools.config.IConfigurationManager;
 import com.surftools.config.MiasmaKey;
 import com.surftools.miasma.web.InboundMessage;
 
-public class MessageWriter {
-  private static final Logger logger = LoggerFactory.getLogger(MessageWriter.class);
+public class WebMessageWriter {
+  private static final Logger logger = LoggerFactory.getLogger(WebMessageWriter.class);
 
   protected static final DateTimeFormatter BODY_DTF = DateTimeFormatter.ofPattern("M/dd");
   protected static final DateTimeFormatter FILE_DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");
@@ -72,7 +72,7 @@ public class MessageWriter {
   private final String sender;
   private SmsType smsType;
 
-  public MessageWriter(IConfigurationManager cm) throws Exception {
+  public WebMessageWriter(IConfigurationManager cm) throws Exception {
     this.cm = cm;
 
     sender = cm.getAsString(MiasmaKey.APP_WRITER_WINLINK_EXPRESS_SENDER);
@@ -92,7 +92,7 @@ public class MessageWriter {
     if (replacementAddress.equals("(null)") && (smsType == SmsType.EMAIL || smsType == SmsType.RAINBOW)) {
       throw new RuntimeException("SmsType set to EMAIL, but replacement address set to (null)");
     }
-    OutboundMessage.setSmsReplacementEmailAddress(replacementAddress);
+    WebOutboundMessage.setSmsReplacementEmailAddress(replacementAddress);
 
     var patPathString = cm.getAsString(MiasmaKey.APP_WRITER_PAT_PATH);
     if (patPathString == null) {
@@ -130,7 +130,7 @@ public class MessageWriter {
       if (!file.exists()) {
         var stringWriter = new StringWriter();
         CSVWriter writer = new CSVWriter(stringWriter);
-        writer.writeNext(OutboundMessage.getHeaders());
+        writer.writeNext(WebOutboundMessage.getHeaders());
         writer.close();
         var stringBuffer = stringWriter.getBuffer();
         cvsFileContent.append(stringBuffer.toString());
@@ -154,26 +154,26 @@ public class MessageWriter {
     writeOutboundMessages(outboundMessages);
   }
 
-  private List<OutboundMessage> makeOutboundMessages(InboundMessage inboundMessage) {
-    var list = new ArrayList<OutboundMessage>();
+  private List<WebOutboundMessage> makeOutboundMessages(InboundMessage inboundMessage) {
+    var list = new ArrayList<WebOutboundMessage>();
     if (inboundMessage.isEmail()) {
-      var outboundMessage = new OutboundMessage(inboundMessage, smsType);
+      var outboundMessage = new WebOutboundMessage(inboundMessage, smsType);
       list.add(outboundMessage);
       return list;
     }
 
     if (smsType != SmsType.RAINBOW) {
-      list.add(new OutboundMessage(inboundMessage, smsType));
+      list.add(new WebOutboundMessage(inboundMessage, smsType));
     } else {
       for (var type : SmsType.RAINBOX_LIST) {
-        list.add(new OutboundMessage(inboundMessage, type));
+        list.add(new WebOutboundMessage(inboundMessage, type));
       }
     }
 
     return list;
   }
 
-  private void writeOutboundMessages(List<OutboundMessage> messages) {
+  private void writeOutboundMessages(List<WebOutboundMessage> messages) {
     for (var message : messages) {
       writePatFile(message);
       writeWindowsExpressFile(message);
@@ -181,7 +181,7 @@ public class MessageWriter {
     }
   }
 
-  private void writeCsvLine(OutboundMessage m) {
+  private void writeCsvLine(WebOutboundMessage m) {
     if (!isCsvEnabled) {
       logger.info("didn't create CSV message because not enabled");
       return;
@@ -202,7 +202,7 @@ public class MessageWriter {
     }
   }
 
-  private void writePatFile(OutboundMessage m) {
+  private void writePatFile(WebOutboundMessage m) {
     if (!isPatEnabled) {
       logger.info("didn't create PAT message because not enabled");
       return;
@@ -238,7 +238,7 @@ public class MessageWriter {
 
   }
 
-  private void writeWindowsExpressFile(OutboundMessage m) {
+  private void writeWindowsExpressFile(WebOutboundMessage m) {
     if (!isWinlinkExpresEnabled) {
       logger.info("didn't create WinlinkExpress message because not enabled");
       return;

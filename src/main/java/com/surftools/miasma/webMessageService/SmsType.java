@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasma.messageService;
+package com.surftools.miasma.webMessageService;
 
 import java.util.ArrayList;
 import java.util.List;
