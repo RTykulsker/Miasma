@@ -31,10 +31,13 @@ package com.surftools.miasma.batch;
  * represents status of a row read from a spreadsheet file
  */
 public enum InputStatus {
-  OK, OK_EMAIL, OK_SMS, //
-  HEADER, //
+  UNKNOWN, HEADER, OK_EMAIL, OK_SMS, OK_WINLINK, //
   NO_FROM_FIELD, NO_TO_FIELD, NO_TEXT_FIELD, //
   NO_FROM_AND_TO_FIELDS, NO_TO_AND_TEXT_FIELDS, NO_FROM_AND_TEXT_FIELDS, //
   NO_FROM_TO_AND_TEXT_FIELDS, //
-  CANT_PARSE_TO_FIELDS, TEXT_TOO_LONG_FOR_SMS
+  CANT_PARSE_TO_FIELDS, TEXT_TOO_LONG;
+
+  public boolean isOk() {
+    return this == OK_EMAIL || this == OK_SMS || this == OK_WINLINK;
+  }
 }

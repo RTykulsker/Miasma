@@ -38,6 +38,9 @@ public enum MiasmaKey {
   APP_SMS_TYPE("app.sms.type"), //
 
   BATCH_INBOX_PATH("batch.inbox.path"), //
+  BATCH_AUTO_DITTO_ENABLED("batch.auto.ditto.enabled"), //
+  BATCH_MAX_MESSAGE_LENGTH("batch.maxMessageLength"), //
+  BATCH_EXCEL_IGNORE_SHEET_LIST("batch.excel.ignore.sheet.list"), //
 
   SERVER_PORT("server.port", "5000"), //
   SERVER_SEQUENCE_GENERATOR_PATH("server.sequenceGenerator.path"),

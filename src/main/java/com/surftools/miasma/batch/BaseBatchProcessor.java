@@ -29,26 +29,43 @@ package com.surftools.miasma.batch;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.surftools.config.IConfigurationManager;
+import com.surftools.config.MiasmaKey;
 
 public class BaseBatchProcessor {
+  private static final Logger logger = LoggerFactory.getLogger(BaseBatchProcessor.class);
+  private static final Pattern callsignPattern = Pattern.compile("[a-zA-Z0-9]{1,3}[0-9][a-zA-Z0-9]{0,3}[a-zA-Z]");
+
   protected String batchId;
   protected File file;
   protected IConfigurationManager cm;
 
-  private boolean isAutoDitto = false; // TODO from cm
-  private static String lastFrom = "";
-  private static String lastTo = "";
-  private static String lastText = "";
+  private boolean isAutoDitto;
+  private String lastFrom = "";
+  private String lastTo = "";
+  private String lastText = "";
+
+  private int maxMessageLength;
 
   public BaseBatchProcessor(String batchId, File file, IConfigurationManager cm) {
     this.batchId = batchId;
     this.file = file;
     this.cm = cm;
+
+    isAutoDitto = cm.getAsBoolean(MiasmaKey.BATCH_AUTO_DITTO_ENABLED, Boolean.FALSE);
+    logger.info("IsAutoDitto: " + isAutoDitto);
+
+    maxMessageLength = cm.getAsInt(MiasmaKey.BATCH_MAX_MESSAGE_LENGTH, Integer.valueOf(92));
+    logger.info("Email Max Message Length: " + maxMessageLength);
   }
 
   public ProcessResult parse(InputRecord inputRecord) {
+
     var okList = new ArrayList<InputRecord>();
     var errorList = new ArrayList<InputRecord>();
     var counterContext = new CounterContext(batchId);
@@ -63,7 +80,7 @@ public class BaseBatchProcessor {
       textValue = textValue.isEmpty() ? lastText : textValue;
     }
 
-    var inputStatus = InputStatus.OK;
+    var inputStatus = InputStatus.UNKNOWN;
     if (fromValue.isEmpty() && toValue.isEmpty() && textValue.isEmpty()) {
       inputStatus = InputStatus.NO_FROM_TO_AND_TEXT_FIELDS;
     } else if (fromValue.isEmpty() && toValue.isEmpty() && !textValue.isEmpty()) {
@@ -80,39 +97,50 @@ public class BaseBatchProcessor {
       inputStatus = InputStatus.NO_TEXT_FIELD;
     }
 
-    if (inputStatus == InputStatus.OK) {
+    if (inputStatus == InputStatus.UNKNOWN) {
       if (fromValue.toLowerCase().equals("from") && toValue.toLowerCase().equals("to")) {
         inputStatus = InputStatus.HEADER;
       }
     }
 
-    if (inputStatus == InputStatus.OK) {
+    if (inputStatus == InputStatus.UNKNOWN) {
+      if (textValue.length() > maxMessageLength) {
+        inputStatus = InputStatus.TEXT_TOO_LONG;
+      }
+    }
+
+    if (inputStatus == InputStatus.UNKNOWN) { // still UNKNOWN, ready to proceed
       var tos = toValue.split(";|,");
       for (var address : tos) {
         address = address.trim();
 
         var isEmail = address.contains("@");
         if (!isEmail) {
-          var digits = new StringBuilder();
-          for (var i = 0; i < address.length(); ++i) {
-            var c = address.charAt(i);
-            if (Character.isDigit(c)) {
-              digits.append(c);
-            }
-          } // end loop over characters in address
-          address = digits.toString();
-          if (address.length() == 10) {
-            inputStatus = InputStatus.OK_SMS;
+          var matcher = callsignPattern.matcher(address);
+          if (matcher.find()) {
+            inputStatus = InputStatus.OK_WINLINK;
           } else {
-            inputStatus = InputStatus.CANT_PARSE_TO_FIELDS;
+            var digits = new StringBuilder();
+            for (var i = 0; i < address.length(); ++i) {
+              var c = address.charAt(i);
+              if (Character.isDigit(c)) {
+                digits.append(c);
+              }
+            } // end loop over characters in address
+            address = digits.toString();
+            if (address.length() == 10) {
+              inputStatus = InputStatus.OK_SMS;
+            } else {
+              inputStatus = InputStatus.CANT_PARSE_TO_FIELDS;
+            }
           }
         } else { // not email
           inputStatus = InputStatus.OK_EMAIL;
         }
 
-        var newInputRecord = inputRecord.update(inputStatus, address);
+        var newInputRecord = inputRecord.update(inputStatus, fromValue, address, textValue);
 
-        if (inputStatus == InputStatus.OK_EMAIL || inputStatus == InputStatus.OK_SMS) {
+        if (inputStatus.isOk()) {
           okList.add(newInputRecord);
         } else {
           errorList.add(newInputRecord);
@@ -125,12 +153,19 @@ public class BaseBatchProcessor {
       } // end loop over addresses
 
     } else { // end if inputStatus == OK
-      errorList.add(inputRecord);
-      counterContext.fromCounter.increment(fromValue);
-      counterContext.toCounter.increment(toValue);
-      counterContext.textCounter.increment(textValue);
-      counterContext.statusCounter.increment(inputStatus);
+      if (inputStatus != InputStatus.HEADER) {
+        var newInputRecord = inputRecord.update(inputStatus, fromValue, toValue, textValue);
+        errorList.add(newInputRecord);
+        counterContext.fromCounter.increment(fromValue);
+        counterContext.toCounter.increment(toValue);
+        counterContext.textCounter.increment(textValue);
+        counterContext.statusCounter.increment(inputStatus);
+      }
     } // end if inputStatus != O
+
+    lastFrom = fromValue;
+    lastTo = toValue;
+    lastText = textValue;
 
     return new ProcessResult(okList, errorList, counterContext);
   } // end process()

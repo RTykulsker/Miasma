@@ -124,12 +124,18 @@ public class MiasmaBatchTool {
     for (File file : files) {
       if (file.isDirectory()) {
         var subFolderCounterContext = processFilesInFolder(file); // Recursive call
-        folderCounterContext.accumulate(subFolderCounterContext);
-      } else if (file.getName().endsWith(".xlsx") || file.getName().endsWith(".xls")) {
+        folderCounterContext.merge(subFolderCounterContext);
+      } else if (file.getName().toLowerCase().endsWith(".xlsx") || file.getName().toLowerCase().endsWith(".xls")) {
         var excelProcessor = new ExcelBatchProcessor(batchId, file, cm);
         var results = excelProcessor.process();
         if (results != null && results.counterContext() != null) {
-          folderCounterContext.accumulate(results.counterContext());
+          folderCounterContext.merge(results.counterContext());
+        }
+      } else if (file.getName().toLowerCase().endsWith(".csv")) {
+        var csvProcessor = new CsvBatchProcessor(batchId, file, cm);
+        var results = csvProcessor.process();
+        if (results != null && results.counterContext() != null) {
+          folderCounterContext.merge(results.counterContext());
         }
       } else {
         logger.warn("file: " + file.getName() + " unsupported and ignored");

@@ -27,7 +27,7 @@ SOFTWARE.
 
 package com.surftools.miasma.batch;
 
-import java.util.LinkedHashMap;
+import java.util.List;
 
 import com.surftools.utils.counter.Counter;
 
@@ -36,16 +36,16 @@ public class CounterContext {
   public int folderCount = 0;
   public int fileCount = 0;
   public int tabCount = 0;
-  public Counter fromCounter = new Counter();
-  public Counter toCounter = new Counter();
-  public Counter textCounter = new Counter();
-  public Counter statusCounter = new Counter();
+  public Counter fromCounter = new Counter("From values:");
+  public Counter toCounter = new Counter("To values:");
+  public Counter textCounter = new Counter("Text values:");
+  public Counter statusCounter = new Counter("Status values:");
 
   public CounterContext(String batchId) {
     this.batchId = batchId;
   }
 
-  public void accumulate(CounterContext childCounterContext) {
+  public void merge(CounterContext childCounterContext) {
     this.folderCount += childCounterContext.folderCount;
     this.fileCount += childCounterContext.fileCount;
     this.tabCount += childCounterContext.tabCount;
@@ -73,14 +73,8 @@ public class CounterContext {
     sb.append("Folder count: " + folderCount + "\n");
     sb.append("File count: " + fileCount + "\n");
     sb.append("Tab count: " + tabCount + "\n");
-    var map = new LinkedHashMap<String, Counter>();
-    map.put("From values: ", fromCounter);
-    map.put("To values", toCounter);
-    map.put("Text values: ", textCounter);
-    map.put("Status values: ", statusCounter);
-    for (var key : map.keySet()) {
-      sb.append(key + "\n");
-      var counter = map.get(key);
+    for (var counter : List.of(fromCounter, toCounter, textCounter, statusCounter)) {
+      sb.append(counter.getName() + "\n");
       var iterator = counter.getDescendingCountIterator();
       while (iterator.hasNext()) {
         var entry = iterator.next();

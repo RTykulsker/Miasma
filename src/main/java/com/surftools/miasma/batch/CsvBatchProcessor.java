@@ -28,38 +28,27 @@ SOFTWARE.
 package com.surftools.miasma.batch;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.surftools.config.IConfigurationManager;
-import com.surftools.config.MiasmaKey;
 
-public class ExcelBatchProcessor extends BaseBatchProcessor {
-  private static final Logger logger = LoggerFactory.getLogger(ExcelBatchProcessor.class);
-  private Set<String> ignoreSheetSet = new LinkedHashSet<>();
+public class CsvBatchProcessor extends BaseBatchProcessor {
+  private static final Logger logger = LoggerFactory.getLogger(CsvBatchProcessor.class);
 
-  public ExcelBatchProcessor(String batchId, File file, IConfigurationManager cm) {
+  public CsvBatchProcessor(String batchId, File file, IConfigurationManager cm) {
     super(batchId, file, cm);
 
-    var ignoreSheetString = cm.getAsString(MiasmaKey.BATCH_EXCEL_IGNORE_SHEET_LIST, "");
-    if (!ignoreSheetString.isEmpty()) {
-      var fields = ignoreSheetString.trim().split(",");
-      for (var field : fields) {
-        ignoreSheetSet.add(field.trim());
-      }
-      logger.warn("Will ignore the follow sheet names: " + String.join(", ", ignoreSheetSet));
-    }
   }
 
   public ProcessResult process() {
@@ -67,29 +56,35 @@ public class ExcelBatchProcessor extends BaseBatchProcessor {
 
     var processResult = new ProcessResult(new ArrayList<InputRecord>(), new ArrayList<InputRecord>(),
         new CounterContext(batchId));
-    try (var fis = new FileInputStream(file);
-        var workbook = file.getName().endsWith(".xlsx") ? new XSSFWorkbook(fis) : new HSSFWorkbook(fis)) {
 
+    var rowCount = -1;
+    try {
       ++processResult.counterContext().fileCount;
-      for (var sheet : workbook) {
-        ++processResult.counterContext().tabCount;
-        var sheetName = sheet.getSheetName();
-        if (ignoreSheetSet.contains(sheetName)) {
-          logger.warn("Ignoring file/sheet: " + file.getName() + "/" + sheetName);
-          continue;
-        }
-        logger.info("processing sheet: " + sheet.getSheetName());
-        for (var row : sheet) {
-          var inputRecord = new InputRecord(batchId, file.getPath(), sheet.getSheetName(), //
-              String.valueOf(row.getRowNum() + 1), InputStatus.UNKNOWN, //
-              getStringValue(row, 0), getStringValue(row, 1), getStringValue(row, 2));
-          var rowProcessResults = parse(inputRecord);
-          processResult.merge(rowProcessResults);
-        }
+      ++processResult.counterContext().tabCount;
+      var separator = ',';
+      var ignoreQuotes = false;
+      var skipLines = 0;
+      var reader = new FileReader(file.getPath());
+      var parser = new CSVParserBuilder() //
+          .withSeparator(separator) //
+            .withIgnoreQuotations(ignoreQuotes) //
+            .build();
+      CSVReader csvReader = new CSVReaderBuilder(reader) //
+          .withSkipLines(skipLines)//
+            .withCSVParser(parser)//
+            .build();
+      rowCount = 0;
+      String[] fields = null;
+      while ((fields = csvReader.readNext()) != null) {
+        ++rowCount;
+        var inputRecord = new InputRecord(batchId, file.getPath(), "n/a", //
+            String.valueOf(rowCount), InputStatus.UNKNOWN, //
+            fields[0], fields[1], fields[2]);
+        var rowProcessResults = parse(inputRecord);
+        processResult.merge(rowProcessResults);
       }
     } catch (Exception e) {
-      logger.error("Exception processing Excel file: " + file.getPath() + ", " + e.getMessage());
-      e.printStackTrace();
+      logger.error("Exception processing CSV file " + file.toString() + ", row " + rowCount + ", " + e.getMessage());
     }
 
     logger

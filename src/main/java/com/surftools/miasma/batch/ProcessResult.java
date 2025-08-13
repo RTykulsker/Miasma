@@ -34,7 +34,7 @@ public record ProcessResult(List<InputRecord> okList, List<InputRecord> errorLis
   public ProcessResult merge(ProcessResult child) {
     okList.addAll(child.okList);
     errorList.addAll(child.errorList);
-    counterContext.accumulate(child.counterContext);
+    counterContext.merge(child.counterContext);
     return new ProcessResult(okList, errorList, counterContext);
   }
 
