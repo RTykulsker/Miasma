@@ -27,9 +27,11 @@ SOFTWARE.
 
 package com.surftools.miasma.batch;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public record ProcessResult(List<SpreadsheetRecord> okList, List<SpreadsheetRecord> errorList, CounterContext counterContext) {
+public record ProcessResult(List<SpreadsheetRecord> okList, List<SpreadsheetRecord> errorList,
+    CounterContext counterContext) {
 
   public ProcessResult merge(ProcessResult child) {
     okList.addAll(child.okList);
@@ -38,4 +40,6 @@ public record ProcessResult(List<SpreadsheetRecord> okList, List<SpreadsheetReco
     return new ProcessResult(okList, errorList, counterContext);
   }
 
+  public static ProcessResult EMPTY = new ProcessResult(new ArrayList<SpreadsheetRecord>(),
+      new ArrayList<SpreadsheetRecord>(), CounterContext.EMPTY);
 }

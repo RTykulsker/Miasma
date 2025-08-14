@@ -45,6 +45,8 @@ public class CounterContext {
     this.batchId = batchId;
   }
 
+  public static CounterContext EMPTY = new CounterContext("null");
+
   public void merge(CounterContext childCounterContext) {
     this.folderCount += childCounterContext.folderCount;
     this.fileCount += childCounterContext.fileCount;

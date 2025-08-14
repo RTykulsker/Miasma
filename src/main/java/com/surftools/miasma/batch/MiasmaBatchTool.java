@@ -110,18 +110,18 @@ public class MiasmaBatchTool {
   public ProcessResult processFilesInFolder(File folder) {
     if (folder == null) {
       logger.warn("null folder");
-      return null;
+      return ProcessResult.EMPTY;
     }
 
     if (!folder.exists()) {
       logger.warn("folder: " + folder.getName() + " doesn't exist!");
-      return null;
+      return ProcessResult.EMPTY;
     }
 
     var files = Arrays.asList(folder.listFiles());
     if (files == null || files.size() == 0) {
       logger.warn("folder: " + folder.getName() + ", no files!");
-      return null;
+      return ProcessResult.EMPTY;
     }
 
     logger.info("processing folder: " + folder.getName());
