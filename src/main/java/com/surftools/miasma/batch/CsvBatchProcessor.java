@@ -54,7 +54,7 @@ public class CsvBatchProcessor extends BaseBatchProcessor {
   public ProcessResult process() {
     logger.info("Processing: " + file.getAbsolutePath());
 
-    var processResult = new ProcessResult(new ArrayList<InputRecord>(), new ArrayList<InputRecord>(),
+    var processResult = new ProcessResult(new ArrayList<SpreadsheetRecord>(), new ArrayList<SpreadsheetRecord>(),
         new CounterContext(batchId));
 
     var rowCount = -1;
@@ -77,10 +77,10 @@ public class CsvBatchProcessor extends BaseBatchProcessor {
       String[] fields = null;
       while ((fields = csvReader.readNext()) != null) {
         ++rowCount;
-        var inputRecord = new InputRecord(batchId, file.getPath(), "n/a", //
+        var spreadsheetRecord = new SpreadsheetRecord(batchId, file.getPath(), "n/a", //
             String.valueOf(rowCount), InputStatus.UNKNOWN, //
             fields[0], fields[1], fields[2]);
-        var rowProcessResults = parse(inputRecord);
+        var rowProcessResults = parse(spreadsheetRecord);
         processResult.merge(rowProcessResults);
       }
     } catch (Exception e) {

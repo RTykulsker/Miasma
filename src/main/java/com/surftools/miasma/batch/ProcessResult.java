@@ -29,7 +29,7 @@ package com.surftools.miasma.batch;
 
 import java.util.List;
 
-public record ProcessResult(List<InputRecord> okList, List<InputRecord> errorList, CounterContext counterContext) {
+public record ProcessResult(List<SpreadsheetRecord> okList, List<SpreadsheetRecord> errorList, CounterContext counterContext) {
 
   public ProcessResult merge(ProcessResult child) {
     okList.addAll(child.okList);

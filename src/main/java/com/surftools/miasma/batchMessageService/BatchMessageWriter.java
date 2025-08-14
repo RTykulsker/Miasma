@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
 import com.opencsv.CSVWriter;
 import com.surftools.config.IConfigurationManager;
 import com.surftools.config.MiasmaKey;
-import com.surftools.miasma.batch.InputRecord;
 import com.surftools.miasma.batch.InputStatus;
+import com.surftools.miasma.batch.SpreadsheetRecord;
 import com.surftools.miasma.webMessageService.SmsType;
 
 public class BatchMessageWriter {
@@ -151,34 +151,36 @@ public class BatchMessageWriter {
    *
    * @param inboundMessage
    */
-  public void write(List<InputRecord> inputRecords) {
-    var outboundMessages = makeOutboundMessages(inputRecords);
+  public void write(List<SpreadsheetRecord> spreadsheetRecords) {
+    var outboundMessages = makeOutboundMessages(spreadsheetRecords);
     writeOutboundMessages(outboundMessages);
   }
 
   /**
    * explode inputRecords into OutboundMessages, because of SMS rainbox
    *
-   * @param inputRecords
+   * @param spreadsheetRecords
    * @return
    */
-  private List<BatchOutboundMessage> makeOutboundMessages(List<InputRecord> inputRecords) {
+  private List<BatchOutboundMessage> makeOutboundMessages(List<SpreadsheetRecord> spreadsheetRecords) {
+    logger.info("received: " + spreadsheetRecords.size() + " input spreadsheet records");
     var list = new ArrayList<BatchOutboundMessage>();
-    for (var inputRecord : inputRecords) {
-      if (inputRecord.status() == InputStatus.OK_EMAIL) {
-        var outboundMessage = new BatchOutboundMessage(inputRecord, smsType);
+    for (var spreadsheetRecord : spreadsheetRecords) {
+      if (spreadsheetRecord.status() == InputStatus.OK_EMAIL) {
+        var outboundMessage = new BatchOutboundMessage(spreadsheetRecord, smsType); // TODO null?
         list.add(outboundMessage);
-      }
-
-      if (smsType != SmsType.RAINBOW) {
-        list.add(new BatchOutboundMessage(inputRecord, smsType));
       } else {
-        for (var type : SmsType.RAINBOX_LIST) {
-          list.add(new BatchOutboundMessage(inputRecord, type));
+        if (smsType != SmsType.RAINBOW) {
+          list.add(new BatchOutboundMessage(spreadsheetRecord, smsType));
+        } else {
+          for (var type : SmsType.RAINBOX_LIST) {
+            list.add(new BatchOutboundMessage(spreadsheetRecord, type));
+          }
         }
       }
     }
 
+    logger.info("returned: " + list.size() + " output batch outbound messages");
     return list;
   }
 

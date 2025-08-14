@@ -36,7 +36,7 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base32;
 
-import com.surftools.miasma.batch.InputRecord;
+import com.surftools.miasma.batch.SpreadsheetRecord;
 import com.surftools.miasma.batch.InputStatus;
 import com.surftools.miasma.webMessageService.SmsType;
 
@@ -46,7 +46,7 @@ public class BatchOutboundMessage {
   protected static final DateTimeFormatter MESSAGE_TIME_DTF = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
   protected static final DateTimeFormatter MIME_DTF = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss +0000");
 
-  public final InputRecord inputRecord;
+  public final SpreadsheetRecord inputRecord;
   public final SmsType smsType;
   public final String messageId;
   public final LocalDateTime dateTimeAccepted;
@@ -57,43 +57,43 @@ public class BatchOutboundMessage {
 
   static String smsEmailAddress = null;
 
-  public BatchOutboundMessage(InputRecord inputRecord, SmsType smsType) {
-    this.inputRecord = inputRecord;
+  public BatchOutboundMessage(SpreadsheetRecord spreadsheetRecord, SmsType smsType) {
+    this.inputRecord = spreadsheetRecord;
     this.smsType = smsType;
-    this.dateTimeAccepted = LocalDateTime.parse(inputRecord.batchId(), FILE_DTF);
+    this.dateTimeAccepted = LocalDateTime.parse(spreadsheetRecord.batchId(), FILE_DTF);
 
-    this.messageId = generateMid(String.join(",", List.of(inputRecord.toString(), smsType.toString())));
+    this.messageId = generateMid(String.join(",", List.of(spreadsheetRecord.toString(), smsType.toString())));
 
     var imSafe = "I'm safe!"; // or maybe I'M SAFE MSG as per RRI/Quick and WE
 
-    var isEmail = inputRecord.status() == InputStatus.OK_EMAIL;
+    var isEmail = spreadsheetRecord.status() == InputStatus.OK_EMAIL;
 
     if (isEmail) {
-      to = inputRecord.to();
+      to = spreadsheetRecord.to();
       subject = imSafe;
-      body = "From " + inputRecord.from() + " " + FILE_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
-          + inputRecord.text();
+      body = "From " + spreadsheetRecord.from() + " " + FILE_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
+          + spreadsheetRecord.text();
     } else {
       switch (smsType) {
       case RRI:
-        to = inputRecord.to() + "@sms.radiorelay.org";
+        to = spreadsheetRecord.to() + "@sms.radiorelay.org";
         subject = imSafe;
-        body = "From " + inputRecord.from() + " " + BODY_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
-            + inputRecord.text();
+        body = "From " + spreadsheetRecord.from() + " " + BODY_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
+            + spreadsheetRecord.text();
         break;
 
       case NA7Q:
         to = "sms@hamdesk.com";
-        subject = inputRecord.to();
-        body = imSafe + "\n" + inputRecord.text();
+        subject = spreadsheetRecord.to();
+        body = imSafe + "\n" + spreadsheetRecord.text();
         break;
 
       case PHILIPPINES:
         to = "winlink2sms@gmail.com";
-        subject = inputRecord.to();
-        var oneLineBody = (imSafe + " " + inputRecord.text()).replaceAll("\r\n", ". ");
+        subject = spreadsheetRecord.to();
+        var oneLineBody = (imSafe + " " + spreadsheetRecord.text()).replaceAll("\r\n", ". ");
 
-        body = "From " + inputRecord.from() + "\n" //
+        body = "From " + spreadsheetRecord.from() + "\n" //
             + "Sent on " + MESSAGE_TIME_DTF.format(dateTimeAccepted).replaceAll("/", "-") + "\n" //
             + oneLineBody;
 
@@ -102,8 +102,8 @@ public class BatchOutboundMessage {
       case EMAIL:
         to = smsEmailAddress;
         subject = imSafe;
-        body = "From " + inputRecord.from() + " " + BODY_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
-            + inputRecord.text();
+        body = "From " + spreadsheetRecord.from() + " " + BODY_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
+            + spreadsheetRecord.text();
         break;
 
       default:
@@ -114,7 +114,7 @@ public class BatchOutboundMessage {
 
   public static String[] getHeaders() {
     var list = new ArrayList<String>();
-    list.addAll(Arrays.asList(InputRecord.getHeaders()));
+    list.addAll(Arrays.asList(SpreadsheetRecord.getHeaders()));
     list.addAll(Arrays.asList(new String[] { "IsEmail", "Sms Type", "MessageId", "To", "Subject", "Body"//
     }));
     return list.toArray(new String[0]);

@@ -31,7 +31,7 @@ package com.surftools.miasma.batch;
  * represents an record read from spreadsheet; may not be "sendable" as is (non-email, non-sms, multiple sms, not
  * complete
  */
-public record InputRecord(String batchId, String fileName, String tabName, String rowNumber, InputStatus status, //
+public record SpreadsheetRecord(String batchId, String fileName, String tabName, String rowNumber, InputStatus status, //
     String from, String to, String text) {
 
   public static String[] getHeaders() {
@@ -42,8 +42,8 @@ public record InputRecord(String batchId, String fileName, String tabName, Strin
     return new String[] { batchId, fileName, tabName, rowNumber, status.name(), from, to, text };
   }
 
-  public InputRecord update(InputStatus newStatus, String newFrom, String newTo, String newText) {
-    return new InputRecord(batchId, fileName, tabName, rowNumber, newStatus, newFrom, newTo, newText);
+  public SpreadsheetRecord update(InputStatus newStatus, String newFrom, String newTo, String newText) {
+    return new SpreadsheetRecord(batchId, fileName, tabName, rowNumber, newStatus, newFrom, newTo, newText);
   }
 
 }

@@ -65,7 +65,7 @@ public class ExcelBatchProcessor extends BaseBatchProcessor {
   public ProcessResult process() {
     logger.info("Processing: " + file.getAbsolutePath());
 
-    var processResult = new ProcessResult(new ArrayList<InputRecord>(), new ArrayList<InputRecord>(),
+    var processResult = new ProcessResult(new ArrayList<SpreadsheetRecord>(), new ArrayList<SpreadsheetRecord>(),
         new CounterContext(batchId));
     try (var fis = new FileInputStream(file);
         var workbook = file.getName().endsWith(".xlsx") ? new XSSFWorkbook(fis) : new HSSFWorkbook(fis)) {
@@ -80,10 +80,10 @@ public class ExcelBatchProcessor extends BaseBatchProcessor {
         }
         logger.info("processing sheet: " + sheet.getSheetName());
         for (var row : sheet) {
-          var inputRecord = new InputRecord(batchId, file.getPath(), sheet.getSheetName(), //
+          var spreadsheetRecord = new SpreadsheetRecord(batchId, file.getPath(), sheet.getSheetName(), //
               String.valueOf(row.getRowNum() + 1), InputStatus.UNKNOWN, //
               getStringValue(row, 0), getStringValue(row, 1), getStringValue(row, 2));
-          var rowProcessResults = parse(inputRecord);
+          var rowProcessResults = parse(spreadsheetRecord);
           processResult.merge(rowProcessResults);
         }
       }

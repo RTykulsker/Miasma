@@ -64,10 +64,10 @@ public class BaseBatchProcessor {
     logger.info("Email Max Message Length: " + maxMessageLength);
   }
 
-  public ProcessResult parse(InputRecord inputRecord) {
+  public ProcessResult parse(SpreadsheetRecord inputRecord) {
 
-    var okList = new ArrayList<InputRecord>();
-    var errorList = new ArrayList<InputRecord>();
+    var okList = new ArrayList<SpreadsheetRecord>();
+    var errorList = new ArrayList<SpreadsheetRecord>();
     var counterContext = new CounterContext(batchId);
 
     var fromValue = inputRecord.from();
@@ -163,9 +163,11 @@ public class BaseBatchProcessor {
       }
     } // end if inputStatus != O
 
-    lastFrom = fromValue;
-    lastTo = toValue;
-    lastText = textValue;
+    if (inputStatus != InputStatus.HEADER) {
+      lastFrom = fromValue;
+      lastTo = toValue;
+      lastText = textValue;
+    }
 
     return new ProcessResult(okList, errorList, counterContext);
   } // end process()

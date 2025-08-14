@@ -97,9 +97,13 @@ public class MiasmaBatchTool {
       ++processResult.counterContext().folderCount;
 
       var okMessages = processResult.okList();
+      var doDeduplication = true;
+      if (doDeduplication) {
+        var deduplicator = new Deduplicator();
+        okMessages = deduplicator.deduplicate(okMessages);
+      }
       var messageWriter = new BatchMessageWriter(cm);
       messageWriter.write(okMessages);
-
       logger.info(processResult.counterContext().toString());
     } catch (Exception e) {
       logger.error("Exception running batchId: " + batchId + ", " + e.getMessage());
@@ -127,7 +131,7 @@ public class MiasmaBatchTool {
 
     logger.info("processing folder: " + folder.getName());
     Collections.sort(files);
-    var folderProcessResult = new ProcessResult(new ArrayList<InputRecord>(), new ArrayList<InputRecord>(),
+    var folderProcessResult = new ProcessResult(new ArrayList<SpreadsheetRecord>(), new ArrayList<SpreadsheetRecord>(),
         new CounterContext(batchId));
     for (File file : files) {
       if (file.isDirectory()) {
