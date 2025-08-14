@@ -28,6 +28,7 @@ SOFTWARE.
 package com.surftools.miasma.batchMessageService;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -47,7 +48,9 @@ import org.slf4j.LoggerFactory;
 import com.opencsv.CSVWriter;
 import com.surftools.config.IConfigurationManager;
 import com.surftools.config.MiasmaKey;
-import com.surftools.miasma.batch.InputStatus;
+import com.surftools.miasma.batch.CounterContext;
+import com.surftools.miasma.batch.Deduplicator;
+import com.surftools.miasma.batch.ProcessResult;
 import com.surftools.miasma.batch.SpreadsheetRecord;
 import com.surftools.miasma.webMessageService.SmsType;
 
@@ -67,9 +70,10 @@ public class BatchMessageWriter {
   private Path winlinkExpressPath;
   private boolean isWinlinkExpresEnabled;
 
-  private Path csvPath;
+  private Path csvOkPath;
+  private Path csvErrorPath;
+  private Path csvCounterContextPath;
   private boolean isCsvEnabled;
-  private StringBuilder cvsFileContent = new StringBuilder();
 
   private final String sender;
   private SmsType smsType;
@@ -122,38 +126,69 @@ public class BatchMessageWriter {
       isCsvEnabled = false;
     } else {
       isCsvEnabled = true;
-
       var csvDirPath = Path.of(csvOutputPathString);
       Files.createDirectories(csvDirPath);
-
-      csvPath = Path.of(csvDirPath.toString(), "miasma.csv");
-      var file = new File(csvPath.toString());
-
-      if (!file.exists()) {
-        var stringWriter = new StringWriter();
-        CSVWriter writer = new CSVWriter(stringWriter);
-        writer.writeNext(BatchOutboundMessage.getHeaders());
-        writer.close();
-        var stringBuffer = stringWriter.getBuffer();
-        cvsFileContent.append(stringBuffer.toString());
-        Files.writeString(csvPath, cvsFileContent.toString());
-      } else {
-        var lines = Files.readAllLines(csvPath);
-        logger.info("read " + (lines.size() - 1) + " lines from " + csvPath.toString());
-        cvsFileContent.append(String.join("\n", lines));
-        cvsFileContent.append("\n");
+      csvOkPath = Path.of(csvDirPath.toString(), "batch-details.csv");
+      csvErrorPath = Path.of(csvDirPath.toString(), "batch-details-ERRORS.csv");
+      csvCounterContextPath = Path.of(csvDirPath.toString(), "counterContext.csv");
+      for (var path : List.of(csvOkPath, csvErrorPath, csvCounterContextPath)) {
+        var file = new File(path.toString());
+        if (!file.exists()) {
+          var stringWriter = new StringWriter();
+          var csvWriter = new CSVWriter(stringWriter);
+          var isCounterContext = path.toString().endsWith("counterContext.csv");
+          var headers = isCounterContext ? CounterContext.getHeaders() : BatchOutboundMessage.getHeaders();
+          csvWriter.writeNext(headers);
+          csvWriter.close();
+          Files.writeString(path, stringWriter.getBuffer().toString());
+        }
       }
-
     }
   }
 
   /**
+   * our public interface
    *
-   * @param inboundMessage
+   * @param result
    */
-  public void write(List<SpreadsheetRecord> spreadsheetRecords) {
-    var outboundMessages = makeOutboundMessages(spreadsheetRecords);
+  public void write(ProcessResult result) {
+    writeCounterContext(result.counterContext());
+    var deduplicator = new Deduplicator();
+
+    var okList = deduplicator.deduplicate(true, result.okList());
+    var outboundMessages = makeOutboundMessages(okList);
     writeOutboundMessages(outboundMessages);
+
+    var errorList = deduplicator.deduplicate(false, result.errorList());
+    var errorMessages = makeOutboundMessages(errorList);
+    for (var errorMessage : errorMessages) {
+      writeCsvLine(false, errorMessage);
+    }
+  }
+
+  private void writeCounterContext(CounterContext counterContext) {
+    if (!isCsvEnabled) {
+      logger.info("didn't append CSV counterContext because not enabled");
+      return;
+    }
+
+    try {
+      var stringWriter = new StringWriter();
+      CSVWriter csvWriter = new CSVWriter(stringWriter);
+      csvWriter.writeNext(counterContext.getValues());
+      csvWriter.close();
+      var stringBuffer = stringWriter.getBuffer();
+      var messageContent = stringBuffer.toString();
+
+      var fileWriter = new FileWriter(csvCounterContextPath.toString(), true);
+      fileWriter.write(messageContent);
+      fileWriter.close();
+
+      logger.info("Appended to cvs counterContext file: " + csvCounterContextPath);
+    } catch (Exception e) {
+      logger.error("Exception appending to file: " + csvCounterContextPath + ", " + e.getLocalizedMessage());
+    }
+
   }
 
   /**
@@ -166,8 +201,8 @@ public class BatchMessageWriter {
     logger.info("received: " + spreadsheetRecords.size() + " input spreadsheet records");
     var list = new ArrayList<BatchOutboundMessage>();
     for (var spreadsheetRecord : spreadsheetRecords) {
-      if (spreadsheetRecord.status() == InputStatus.OK_EMAIL) {
-        var outboundMessage = new BatchOutboundMessage(spreadsheetRecord, smsType); // TODO null?
+      if (spreadsheetRecord.status().isEmail()) {
+        var outboundMessage = new BatchOutboundMessage(spreadsheetRecord, null);
         list.add(outboundMessage);
       } else {
         if (smsType != SmsType.RAINBOW) {
@@ -188,28 +223,34 @@ public class BatchMessageWriter {
     writeWindowsExpressFile(messages);
     for (var message : messages) {
       writePatFile(message);
-      writeCsvLine(message);
+      writeCsvLine(true, message);
     }
   }
 
-  private void writeCsvLine(BatchOutboundMessage m) {
+  // private
+
+  private void writeCsvLine(boolean isOk, BatchOutboundMessage m) {
     if (!isCsvEnabled) {
-      logger.info("didn't create CSV message because not enabled");
+      logger.info("didn't append CSV message because not enabled");
       return;
     }
 
+    var path = isOk ? csvOkPath : csvErrorPath;
     try {
       var stringWriter = new StringWriter();
-      CSVWriter writer = new CSVWriter(stringWriter);
-      writer.writeNext(m.getValues());
-      writer.close();
+      CSVWriter csvWriter = new CSVWriter(stringWriter);
+      csvWriter.writeNext(m.getValues());
+      csvWriter.close();
       var stringBuffer = stringWriter.getBuffer();
       var messageContent = stringBuffer.toString();
-      cvsFileContent.append(messageContent);
-      Files.writeString(csvPath, cvsFileContent.toString());
-      logger.info("wrote miasma.cvs file: " + csvPath);
+
+      var fileWriter = new FileWriter(path.toString(), true);
+      fileWriter.write(messageContent);
+      fileWriter.close();
+
+      logger.info("Appended to cvs file: " + path);
     } catch (Exception e) {
-      logger.error("Exception writing miasma.csv file: " + csvPath + ", " + e.getLocalizedMessage());
+      logger.error("Exception appending to csv file: " + path + ", " + e.getLocalizedMessage());
     }
   }
 
@@ -320,6 +361,7 @@ public class BatchMessageWriter {
         </message_list>
       </Winlink_Express_message_export>
             """;
+
   private static String messageTemplate = """
           <message>
             <id>#MESSAGE_ID#</id>

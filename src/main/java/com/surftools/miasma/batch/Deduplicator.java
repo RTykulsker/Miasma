@@ -54,8 +54,9 @@ public class Deduplicator {
 
   private static final Logger logger = LoggerFactory.getLogger(ExcelBatchProcessor.class);
 
-  public List<SpreadsheetRecord> deduplicate(List<SpreadsheetRecord> inputs) {
-    logger.info("received: " + inputs.size() + " input spreadsheet records");
+  public List<SpreadsheetRecord> deduplicate(boolean isOkList, List<SpreadsheetRecord> inputs) {
+    var label = isOkList ? "OK" : "error";
+    logger.info("received: " + inputs.size() + " " + label + " input spreadsheet records");
     var outputs = new ArrayList<SpreadsheetRecord>(inputs.size());
     var map = new LinkedHashMap<Mini, List<SpreadsheetRecord>>();
 
@@ -75,12 +76,12 @@ public class Deduplicator {
           extras.add(Extra.fromSpreadsheet(spreadsheet));
         }
         logger
-            .info("DUPES: found " + list.size() + " duplicates for: " + mini.toString() + ", "
+            .info("DUPES: found " + list.size() + " " + label + " duplicates for: " + mini.toString() + ", "
                 + extras.stream().map(Object::toString).collect(Collectors.joining(", ")));
       }
     }
 
-    logger.info("returned: " + outputs.size() + " output spreadsheet records");
+    logger.info("returned: " + outputs.size() + " " + label + " output spreadsheet records");
     return outputs;
   }
 }

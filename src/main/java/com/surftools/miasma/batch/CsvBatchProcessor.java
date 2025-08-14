@@ -32,9 +32,6 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,44 +91,6 @@ public class CsvBatchProcessor extends BaseBatchProcessor {
         .info("error inputRecords: " + "\n"
             + processResult.errorList().stream().map(Object::toString).collect(Collectors.joining("\n")));
     return processResult;
-  }
-
-  public String getStringValue(Row row, int columnIndex) {
-    Cell cell = row.getCell(columnIndex);
-    if (cell == null) {
-      return "";
-    }
-
-    switch (cell.getCellType()) {
-    case BLANK:
-      return "";
-
-    case BOOLEAN:
-      return Boolean.toString(cell.getBooleanCellValue());
-
-    case FORMULA: {
-      CellType cachedCellType = cell.getCachedFormulaResultType();
-      if (cachedCellType == CellType.STRING) {
-        return cell.getStringCellValue();
-      } else if (cachedCellType == CellType.NUMERIC) {
-        return Double.toString(cell.getNumericCellValue());
-      } else if (cachedCellType == CellType.BOOLEAN) {
-        return Boolean.toString(cell.getBooleanCellValue());
-      }
-    }
-
-    case NUMERIC:
-      return Double.toString(cell.getNumericCellValue());
-
-    case STRING:
-      return cell.getStringCellValue();
-
-    default:
-      logger
-          .error("Unsupported type: " + cell.getCellType().name() + " on row: " + row.getRowNum() + ", col: "
-              + columnIndex);
-      return "";
-    }
   }
 
 }

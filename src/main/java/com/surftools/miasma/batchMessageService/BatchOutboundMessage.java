@@ -37,7 +37,6 @@ import java.util.List;
 import org.apache.commons.codec.binary.Base32;
 
 import com.surftools.miasma.batch.SpreadsheetRecord;
-import com.surftools.miasma.batch.InputStatus;
 import com.surftools.miasma.webMessageService.SmsType;
 
 public class BatchOutboundMessage {
@@ -62,11 +61,12 @@ public class BatchOutboundMessage {
     this.smsType = smsType;
     this.dateTimeAccepted = LocalDateTime.parse(spreadsheetRecord.batchId(), FILE_DTF);
 
-    this.messageId = generateMid(String.join(",", List.of(spreadsheetRecord.toString(), smsType.toString())));
+    this.messageId = generateMid(
+        String.join(",", List.of(spreadsheetRecord.toString(), (smsType == null) ? "null" : smsType.toString())));
 
     var imSafe = "I'm safe!"; // or maybe I'M SAFE MSG as per RRI/Quick and WE
 
-    var isEmail = spreadsheetRecord.status() == InputStatus.OK_EMAIL;
+    var isEmail = spreadsheetRecord.status().isEmail();
 
     if (isEmail) {
       to = spreadsheetRecord.to();
@@ -121,7 +121,7 @@ public class BatchOutboundMessage {
   }
 
   public String[] getValues() {
-    var isEmail = inputRecord.status() == InputStatus.OK_EMAIL ? "true" : "false";
+    var isEmail = inputRecord.status().isEmail() ? "true" : "false";
     var smsTypeString = smsType == null ? "(none)" : smsType.toString();
     var list = new ArrayList<String>();
     list.addAll(Arrays.asList(inputRecord.getValues()));

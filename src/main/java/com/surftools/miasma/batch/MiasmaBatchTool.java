@@ -96,14 +96,9 @@ public class MiasmaBatchTool {
       var processResult = processFilesInFolder(inboxFolder);
       ++processResult.counterContext().folderCount;
 
-      var okMessages = processResult.okList();
-      var doDeduplication = true;
-      if (doDeduplication) {
-        var deduplicator = new Deduplicator();
-        okMessages = deduplicator.deduplicate(okMessages);
-      }
       var messageWriter = new BatchMessageWriter(cm);
-      messageWriter.write(okMessages);
+      messageWriter.write(processResult);
+
       logger.info(processResult.counterContext().toString());
     } catch (Exception e) {
       logger.error("Exception running batchId: " + batchId + ", " + e.getMessage());

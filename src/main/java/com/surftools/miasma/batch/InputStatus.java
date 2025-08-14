@@ -37,7 +37,12 @@ public enum InputStatus {
   NO_FROM_TO_AND_TEXT_FIELDS, //
   CANT_PARSE_TO_FIELDS, TEXT_TOO_LONG;
 
+  public boolean isEmail() {
+    return this == OK_EMAIL || this == OK_WINLINK;
+  }
+
   public boolean isOk() {
     return this == OK_EMAIL || this == OK_SMS || this == OK_WINLINK;
   }
+
 }
