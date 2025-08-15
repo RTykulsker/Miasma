@@ -84,17 +84,18 @@ public class MiasmaBatchTool {
     logger.info("begin run");
     try {
       cm = new PropertyFileConfigurationManager(confFileName, MiasmaKey.values());
-      fm = new FileManager(batchId, cm);
-      fm.copyConfig(confFileName);
+      logger.info("batchId: " + batchId);
+      logger.info("conf file: " + confFileName);
+
       var inboxPathname = cm.getAsString(MiasmaKey.BATCH_INBOX_PATH);
       var inboxFolder = new File(inboxPathname);
       if (!inboxFolder.exists()) {
         throw new RuntimeException("Inbox folder doesn't exist: " + inboxPathname);
       }
-
-      logger.info("batchId: " + batchId);
-      logger.info("conf file: " + confFileName);
       logger.info("inboxPathName: " + inboxPathname);
+
+      fm = new FileManager(batchId, cm);
+      fm.copyConfig(confFileName);
 
       var processResult = processFilesInFolder(inboxFolder);
       ++processResult.counterContext().folderCount;

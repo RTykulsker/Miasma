@@ -78,7 +78,7 @@ public class ExcelBatchProcessor extends BaseBatchProcessor {
           logger.warn("Ignoring file/sheet: " + file.getName() + "/" + sheetName);
           continue;
         }
-        logger.info("processing sheet: " + sheet.getSheetName());
+        logger.debug("processing sheet: " + sheet.getSheetName());
         for (var row : sheet) {
           var spreadsheetRecord = new SpreadsheetRecord(batchId, file.getPath(), sheet.getSheetName(), //
               String.valueOf(row.getRowNum() + 1), InputStatus.UNKNOWN, //
@@ -92,12 +92,12 @@ public class ExcelBatchProcessor extends BaseBatchProcessor {
       e.printStackTrace();
     }
 
-    logger
-        .info("ok inputRecords: " + "\n"
-            + processResult.okList().stream().map(Object::toString).collect(Collectors.joining("\n")));
-    logger
-        .info("error inputRecords: " + "\n"
-            + processResult.errorList().stream().map(Object::toString).collect(Collectors.joining("\n")));
+    logger.info("file: " + file.getName() + ", ok inputRecords: " + processResult.okList().size());
+    logger.debug("\n" + processResult.okList().stream().map(Object::toString).collect(Collectors.joining("\n")));
+
+    logger.info("file: " + file.getName() + ", error inputRecords: " + processResult.errorList().size());
+    logger.debug("\n" + processResult.errorList().stream().map(Object::toString).collect(Collectors.joining("\n")));
+
     return processResult;
   }
 

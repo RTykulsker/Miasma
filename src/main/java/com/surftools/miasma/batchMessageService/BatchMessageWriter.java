@@ -202,7 +202,6 @@ public class BatchMessageWriter {
    * @return
    */
   private List<BatchOutboundMessage> makeOutboundMessages(List<SpreadsheetRecord> spreadsheetRecords) {
-    logger.info("received: " + spreadsheetRecords.size() + " input spreadsheet records");
     var list = new ArrayList<BatchOutboundMessage>();
     for (var spreadsheetRecord : spreadsheetRecords) {
       if (spreadsheetRecord.status().isEmail()) {
@@ -219,7 +218,7 @@ public class BatchMessageWriter {
       }
     }
 
-    logger.info("returned: " + list.size() + " output batch outbound messages");
+    logger.info("in records: " + spreadsheetRecords.size() + " in, out messages " + list.size());
     return list;
   }
 
@@ -235,7 +234,7 @@ public class BatchMessageWriter {
 
   private void writeCsvLine(boolean isOk, BatchOutboundMessage m) {
     if (!isCsvEnabled) {
-      logger.info("didn't append CSV message because not enabled");
+      logger.debug("didn't append CSV message because not enabled");
       return;
     }
 
@@ -252,7 +251,7 @@ public class BatchMessageWriter {
       fileWriter.write(messageContent);
       fileWriter.close();
 
-      logger.info("Appended to cvs file: " + path);
+      logger.debug("Appended to cvs file: " + path);
     } catch (Exception e) {
       logger.error("Exception appending to csv file: " + path + ", " + e.getLocalizedMessage());
     }
@@ -260,7 +259,7 @@ public class BatchMessageWriter {
 
   private void writePatFile(BatchOutboundMessage m) {
     if (!isPatEnabled) {
-      logger.info("didn't create PAT message because not enabled");
+      logger.debug("didn't create PAT message because not enabled");
       return;
     }
 
@@ -287,7 +286,7 @@ public class BatchMessageWriter {
     var path = Path.of(patPath.toString(), sender, "out", m.messageId + ".b2f");
     try {
       Files.writeString(path, sb.toString());
-      logger.info("wrote PAT b2f file: " + path);
+      logger.debug("wrote PAT b2f file: " + path);
     } catch (Exception e) {
       logger.error("Exception writing b2f file: " + path + ", " + e.getLocalizedMessage());
     }
@@ -297,6 +296,11 @@ public class BatchMessageWriter {
   private void writeWindowsExpressFile(List<BatchOutboundMessage> messages) {
     if (!isWinlinkExpresEnabled) {
       logger.info("didn't create WinlinkExpress message because not enabled");
+      return;
+    }
+
+    if (messages.size() == 0) {
+      logger.info("didn't create WinlinkExpress message because no messages");
       return;
     }
 
@@ -332,7 +336,7 @@ public class BatchMessageWriter {
     var path = Path.of(winlinkExpressPath.toString(), "miasma-" + FILE_DTF.format(dateTimeAccepted) + ".xml");
     try {
       Files.writeString(path, text);
-      logger.info("wrote Winlink Express output to : " + path.toString());
+      logger.info("wrote " + messages.size() + " Winlink Express messages to : " + path.toString());
     } catch (IOException e) {
       e.printStackTrace();
     }

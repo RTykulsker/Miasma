@@ -84,12 +84,12 @@ public class CsvBatchProcessor extends BaseBatchProcessor {
       logger.error("Exception processing CSV file " + file.toString() + ", row " + rowCount + ", " + e.getMessage());
     }
 
-    logger
-        .info("ok inputRecords: " + "\n"
-            + processResult.okList().stream().map(Object::toString).collect(Collectors.joining("\n")));
-    logger
-        .info("error inputRecords: " + "\n"
-            + processResult.errorList().stream().map(Object::toString).collect(Collectors.joining("\n")));
+    logger.info("file: " + file.getName() + ", ok inputRecords: " + processResult.okList().size());
+    logger.debug("\n" + processResult.okList().stream().map(Object::toString).collect(Collectors.joining("\n")));
+
+    logger.info("file: " + file.getName() + ", error inputRecords: " + processResult.errorList().size());
+    logger.debug("\n" + processResult.errorList().stream().map(Object::toString).collect(Collectors.joining("\n")));
+
     return processResult;
   }
 

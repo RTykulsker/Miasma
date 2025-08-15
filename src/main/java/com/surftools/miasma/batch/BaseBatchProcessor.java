@@ -52,16 +52,22 @@ public class BaseBatchProcessor {
 
   private int maxMessageLength;
 
+  private static boolean isInitialized = false;
+
   public BaseBatchProcessor(String batchId, File file, IConfigurationManager cm) {
     this.batchId = batchId;
     this.file = file;
     this.cm = cm;
 
-    isAutoDitto = cm.getAsBoolean(MiasmaKey.BATCH_AUTO_DITTO_ENABLED, Boolean.FALSE);
-    logger.info("IsAutoDitto: " + isAutoDitto);
+    if (!isInitialized) {
+      isAutoDitto = cm.getAsBoolean(MiasmaKey.BATCH_AUTO_DITTO_ENABLED, Boolean.FALSE);
+      logger.info("IsAutoDitto: " + isAutoDitto);
 
-    maxMessageLength = cm.getAsInt(MiasmaKey.BATCH_MAX_MESSAGE_LENGTH, Integer.valueOf(92));
-    logger.info("Max Message Length: " + maxMessageLength);
+      maxMessageLength = cm.getAsInt(MiasmaKey.BATCH_MAX_MESSAGE_LENGTH, Integer.valueOf(92));
+      logger.info("Max Message Length: " + maxMessageLength);
+
+      isInitialized = true;
+    }
   }
 
   public ProcessResult parse(SpreadsheetRecord inputRecord) {
@@ -140,11 +146,9 @@ public class BaseBatchProcessor {
       lastFrom = fromValue;
       lastTo = toValue;
       lastText = textValue;
-
-      return new ProcessResult(okList, errorList, counterContext);
     } // end loop over addresses
 
-    return ProcessResult.EMPTY;
+    return new ProcessResult(okList, errorList, counterContext);
   }
 
   /**

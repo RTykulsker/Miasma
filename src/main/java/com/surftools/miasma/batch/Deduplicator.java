@@ -56,7 +56,6 @@ public class Deduplicator {
 
   public List<SpreadsheetRecord> deduplicate(boolean isOkList, List<SpreadsheetRecord> inputs) {
     var label = isOkList ? "OK" : "error";
-    logger.info("received: " + inputs.size() + " " + label + " input spreadsheet records");
     var outputs = new ArrayList<SpreadsheetRecord>(inputs.size());
     var map = new LinkedHashMap<Mini, List<SpreadsheetRecord>>();
 
@@ -81,7 +80,7 @@ public class Deduplicator {
       }
     }
 
-    logger.info("returned: " + outputs.size() + " " + label + " output spreadsheet records");
+    logger.info(label + " spreadsheet records: " + inputs.size() + " in, " + outputs.size() + " out");
     return outputs;
   }
 }
