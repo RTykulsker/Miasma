@@ -94,15 +94,16 @@ public class BatchMessageWriter {
       logger.info("SMS provider: " + smsType.toString());
     }
 
-    var replacementAddress = cm.getAsString(MiasmaKey.APP_WRITER_SMS_REPLACEMENT_EMAIL_ADDRESS);
-    if (replacementAddress.equals("(null)") && (smsType == SmsType.EMAIL || smsType == SmsType.RAINBOW)) {
+    var replacementAddress = cm.get(MiasmaKey.APP_WRITER_SMS_REPLACEMENT_EMAIL_ADDRESS);
+    if (replacementAddress == null && (smsType == SmsType.EMAIL || smsType == SmsType.RAINBOW)) {
       throw new RuntimeException("SmsType set to EMAIL, but replacement address set to (null)");
     }
     BatchOutboundMessage.setSmsReplacementEmailAddress(replacementAddress);
 
-    var patPathString = cm.getAsString(MiasmaKey.APP_WRITER_PAT_PATH, null);
+    var patPathString = cm.get(MiasmaKey.APP_WRITER_PAT_PATH);
     if (patPathString == null) {
       isPatEnabled = false;
+      logger.warn("PAT processing NOT enabled");
     } else {
       isPatEnabled = true;
       patPath = Path.of(patPathString);
@@ -113,8 +114,10 @@ public class BatchMessageWriter {
       }
     }
 
-    var winlinExpressPathString = cm.getAsString(MiasmaKey.APP_WRITER_WINLINK_EXPRESS_PATH, null);
+    var winlinExpressPathString = cm.get(MiasmaKey.APP_WRITER_WINLINK_EXPRESS_PATH);
     if (winlinExpressPathString == null) {
+      isWinlinkExpresEnabled = false;
+      logger.warn("Winlink Express processing NOT enabled");
     } else {
       isWinlinkExpresEnabled = true;
       winlinkExpressPath = Path.of(winlinExpressPathString);
@@ -124,6 +127,7 @@ public class BatchMessageWriter {
     var csvOutputPathString = cm.getAsString(MiasmaKey.APP_WRITER_CSV_PATH);
     if (csvOutputPathString == null) {
       isCsvEnabled = false;
+      logger.warn("CSV processing NOT enabled");
     } else {
       isCsvEnabled = true;
       var csvDirPath = Path.of(csvOutputPathString);

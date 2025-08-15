@@ -38,6 +38,8 @@ public enum MiasmaKey {
   APP_SMS_TYPE("app.sms.type"), //
 
   BATCH_INBOX_PATH("batch.inbox.path"), //
+  BATCH_INBOX_CLEAN_ENABLED("batch.inbox.clean.enabled"), //
+  BATCH_PROCESSED_PATH("batch.processed.path"), //
   BATCH_AUTO_DITTO_ENABLED("batch.auto.ditto.enabled"), //
   BATCH_MAX_MESSAGE_LENGTH("batch.maxMessageLength"), //
   BATCH_EXCEL_IGNORE_SHEET_LIST("batch.excel.ignore.sheet.list"), //

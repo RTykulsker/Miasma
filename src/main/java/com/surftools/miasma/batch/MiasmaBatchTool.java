@@ -56,6 +56,7 @@ public class MiasmaBatchTool {
 
   private static String batchId;
   private static IConfigurationManager cm;
+  private static FileManager fm;
 
   public static void main(String[] args) {
 
@@ -83,6 +84,8 @@ public class MiasmaBatchTool {
     logger.info("begin run");
     try {
       cm = new PropertyFileConfigurationManager(confFileName, MiasmaKey.values());
+      fm = new FileManager(batchId, cm);
+      fm.copyConfig(confFileName);
       var inboxPathname = cm.getAsString(MiasmaKey.BATCH_INBOX_PATH);
       var inboxFolder = new File(inboxPathname);
       if (!inboxFolder.exists()) {
@@ -99,7 +102,7 @@ public class MiasmaBatchTool {
       var messageWriter = new BatchMessageWriter(cm);
       messageWriter.write(processResult);
 
-      logger.info(processResult.counterContext().toString());
+      fm.cleanInbox();
     } catch (Exception e) {
       logger.error("Exception running batchId: " + batchId + ", " + e.getMessage());
       e.printStackTrace();
@@ -132,24 +135,26 @@ public class MiasmaBatchTool {
       if (file.isDirectory()) {
         var subFolderProcessResult = processFilesInFolder(file); // Recursive call
         folderProcessResult.merge(subFolderProcessResult);
-      } else if (file.getName().toLowerCase().endsWith(".xlsx") || file.getName().toLowerCase().endsWith(".xls")) {
-        var excelProcessor = new ExcelBatchProcessor(batchId, file, cm);
-        var results = excelProcessor.process();
-        if (results != null && results.counterContext() != null) {
-          folderProcessResult.merge(results);
-        }
-      } else if (file.getName().toLowerCase().endsWith(".csv")) {
-        var csvProcessor = new CsvBatchProcessor(batchId, file, cm);
-        var results = csvProcessor.process();
-        if (results != null && results.counterContext() != null) {
-          folderProcessResult.merge(results);
-        }
       } else {
-        logger.warn("file: " + file.getName() + " unsupported and ignored");
-      }
-    }
-
+        if (file.getName().toLowerCase().endsWith(".xlsx") || file.getName().toLowerCase().endsWith(".xls")) {
+          var excelProcessor = new ExcelBatchProcessor(batchId, file, cm);
+          var results = excelProcessor.process();
+          if (results != null && results.counterContext() != null) {
+            folderProcessResult.merge(results);
+            fm.copySpreadsheetFile(file);
+          }
+        } else if (file.getName().toLowerCase().endsWith(".csv")) {
+          var csvProcessor = new CsvBatchProcessor(batchId, file, cm);
+          var results = csvProcessor.process();
+          if (results != null && results.counterContext() != null) {
+            folderProcessResult.merge(results);
+            fm.copySpreadsheetFile(file);
+          }
+        } else {
+          logger.warn("file: " + file.getName() + " unsupported and ignored");
+        }
+      } // end if file
+    } // end loop over files
     return folderProcessResult;
   }
-
 }
