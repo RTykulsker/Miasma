@@ -62,6 +62,21 @@ public class ExcelBatchProcessor extends BaseBatchProcessor {
     }
   }
 
+  /**
+   * process a complete Excel spreadsheet for "I am safe" messages
+   *
+   * loop over all tabs/sheets in the file
+   *
+   * loop over all rows in the tab and create a new SpreadsheetRecord
+   *
+   * hand the SpreadsheetRecord to our parent to be "parsed"
+   *
+   * "accumulate" each row's parseResult via a "merge" operation
+   *
+   * this file's ProcessResult will be "merged" with all other files ProcessResult
+   *
+   * @return
+   */
   public ProcessResult process() {
     logger.info("Processing: " + file.getAbsolutePath());
 
@@ -83,7 +98,7 @@ public class ExcelBatchProcessor extends BaseBatchProcessor {
           var spreadsheetRecord = new SpreadsheetRecord(batchId, file.getPath(), sheet.getSheetName(), //
               String.valueOf(row.getRowNum() + 1), InputStatus.UNKNOWN, //
               getStringValue(row, 0), getStringValue(row, 1), getStringValue(row, 2));
-          var rowProcessResults = parse(spreadsheetRecord);
+          var rowProcessResults = parseSpreadsheetRecord(spreadsheetRecord);
           processResult.merge(rowProcessResults);
         }
       }

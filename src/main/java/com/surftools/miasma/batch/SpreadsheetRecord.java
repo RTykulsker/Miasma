@@ -28,8 +28,7 @@ SOFTWARE.
 package com.surftools.miasma.batch;
 
 /**
- * represents an record read from spreadsheet; may not be "sendable" as is (non-email, non-sms, multiple sms, not
- * complete
+ * represents an record read from spreadsheet
  */
 public record SpreadsheetRecord(String batchId, String fileName, String tabName, String rowNumber, InputStatus status, //
     String from, String to, String text) {

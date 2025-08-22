@@ -39,7 +39,6 @@ import com.surftools.config.MiasmaKey;
 
 public class BaseBatchProcessor {
   private static final Logger logger = LoggerFactory.getLogger(BaseBatchProcessor.class);
-  private static final Pattern callsignPattern = Pattern.compile("[a-zA-Z0-9]{1,3}[0-9][a-zA-Z0-9]{0,3}[a-zA-Z]");
 
   protected String batchId;
   protected File file;
@@ -70,7 +69,17 @@ public class BaseBatchProcessor {
     }
   }
 
-  public ProcessResult parse(SpreadsheetRecord inputRecord) {
+  /**
+   * one ingredient in our "secret sauce"
+   *
+   * validate/invalidate spreadsheet row
+   *
+   * explode the list of addressees in the "to" field
+   *
+   * @param inputRecord
+   * @return
+   */
+  public ProcessResult parseSpreadsheetRecord(SpreadsheetRecord inputRecord) {
     // our inputs
     var fromValue = inputRecord.from();
     var toValue = inputRecord.to();
@@ -111,10 +120,9 @@ public class BaseBatchProcessor {
     for (var address : tos) {
       address = address.trim();
 
-      var isEmail = address.contains("@");
+      var isEmail = isValidEmailAddress(address);
       if (!isEmail) {
-        var matcher = callsignPattern.matcher(address); // this might fail for tactical addresses
-        if (matcher.find()) {
+        if (isValidHamCallsign(address) || isValidWinlinkTacticalAddress(address)) {
           inputStatus = InputStatus.OK_WINLINK;
         } else {
           var digits = new StringBuilder();
@@ -183,5 +191,89 @@ public class BaseBatchProcessor {
     }
     return inputStatus;
   }
+
+  private boolean isValidEmailAddress(String email) {
+    final Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+
+    if (email == null)
+      return false;
+    email = email.trim();
+    return EMAIL_PATTERN.matcher(email).matches();
+  }
+
+  private boolean isValidWinlinkTacticalAddress(String address) {
+    if (address == null) {
+      return false;
+    }
+
+    address = address.trim().toUpperCase();
+
+    if (address.length() < 3 || address.length() > 12) {
+      return false;
+    }
+
+    if (!Character.isLetter(address.charAt(0))) { // Must start with a letter
+      return false;
+    }
+
+    for (char c : address.toCharArray()) { // Must be alphanumeric or underscore only
+      if (!Character.isLetterOrDigit(c) && c != '_') {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private boolean isValidHamCallsign(String callsign) {
+    if (callsign == null)
+      return false;
+
+    callsign = callsign.trim().toUpperCase();
+
+    if (callsign.length() < 3 || callsign.length() > 8) { // Length check (typical range: 3 to 8 characters)
+      return false;
+    }
+
+    if (!callsign.matches("^[A-Z0-9]+$")) { // Valid characters: A-Z and digits only
+      return false;
+    }
+
+    return callsign.matches("^[A-Z0-9]{1,3}[0-9][A-Z0-9]{1,4}$");
+  }
+
+  // public BaseBatchProcessor() {
+  // }
+  //
+  // void run() {
+  // String[] testEmails = { "user@example.com", "john.doe@sub.domain.co.uk", "user_name123@domain.net", "bademail@",
+  // "@missinglocal.com", "noatsymbol.com", "user@domain", "user@domain.c", "user@domain.toolongtld" };
+  //
+  // for (var email : testEmails) {
+  // System.out.printf("%-30s : %s%n", email, isValidEmailAddress(email));
+  // }
+  //
+  // String[] testCallsigns = { "K7ABC", "W1AW", "VE3XYZ", "JA1NUT", "M0ABC", "3D2XYZ", "GB22HQ", "W100USA", "ZS1XYZ",
+  // "DL7XYZ", "N0CALL", "K1D", "9A1AA", "5H3ABC", "BAD@CALL", "TOOLONGCALLSIGN" };
+  //
+  // for (String cs : testCallsigns) {
+  // System.out.printf("%-15s : %s%n", cs, isValidHamCallsign(cs));
+  // }
+  //
+  // String[] testAddresses = { "EOC", "shelter1", "net_control", "123start", "K7ABC", "bad@addr",
+  // "too_long_address_here" };
+  //
+  // for (String addr : testAddresses) {
+  // System.out.printf("%-20s : %s%n", addr, isValidWinlinkTacticalAddress(addr));
+  // }
+  //
+  // }
+  //
+  // public static void main(String[] args) {
+  // var app = new BaseBatchProcessor();
+  //
+  // app.run();
+  //
+  // }
 
 }

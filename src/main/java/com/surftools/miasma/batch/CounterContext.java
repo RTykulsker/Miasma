@@ -31,6 +31,9 @@ import java.util.List;
 
 import com.surftools.utils.counter.Counter;
 
+/**
+ * what would life be without statistics that nobody every looks at
+ */
 public class CounterContext {
   public final String batchId;
   public int folderCount = 0;

@@ -31,11 +31,14 @@ package com.surftools.miasma.batch;
  * represents status of a row read from a spreadsheet file
  */
 public enum InputStatus {
-  UNKNOWN, HEADER, OK_EMAIL, OK_SMS, OK_WINLINK, //
-  NO_FROM_FIELD, NO_TO_FIELD, NO_TEXT_FIELD, //
-  NO_FROM_AND_TO_FIELDS, NO_TO_AND_TEXT_FIELDS, NO_FROM_AND_TEXT_FIELDS, //
-  NO_FROM_TO_AND_TEXT_FIELDS, //
-  CANT_PARSE_TO_FIELDS, TEXT_TOO_LONG;
+  UNKNOWN, // status when read, but before parsing
+  HEADER, // first row, no further processing
+  OK_EMAIL, OK_SMS, OK_WINLINK, // valid parsing, will be sent
+  NO_FROM_FIELD, NO_TO_FIELD, NO_TEXT_FIELD, // missing single field
+  NO_FROM_AND_TO_FIELDS, NO_TO_AND_TEXT_FIELDS, NO_FROM_AND_TEXT_FIELDS, // missing two fields
+  NO_FROM_TO_AND_TEXT_FIELDS, // missing all three fields
+  CANT_PARSE_TO_FIELDS, // not a valid email, SMS (10 digit) or ham call
+  TEXT_TOO_LONG; // based on configurable limit
 
   public boolean isEmail() {
     return this == OK_EMAIL || this == OK_WINLINK;

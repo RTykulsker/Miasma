@@ -39,6 +39,9 @@ import org.apache.commons.codec.binary.Base32;
 import com.surftools.miasma.batch.SpreadsheetRecord;
 import com.surftools.miasma.webMessageService.SmsType;
 
+/**
+ * transform a SpreadsheetRecord (input) to something that can be directly processed by an SMS engine
+ */
 public class BatchOutboundMessage {
   protected static final DateTimeFormatter BODY_DTF = DateTimeFormatter.ofPattern("M/dd");
   protected static final DateTimeFormatter FILE_DTF = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss");

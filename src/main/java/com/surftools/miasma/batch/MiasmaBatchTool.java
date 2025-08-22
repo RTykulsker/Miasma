@@ -48,6 +48,23 @@ import com.surftools.miasma.web.MiasmaServer;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 
+/**
+ * main class to read a bunch of spreadsheet files (Excel) "I am safe" messages, and produce output(s) that can be used
+ * by third-party Winlink clients (Winlink Express, Pat)
+ *
+ * "I am safe" messages are SHORT, simple, one-way messages to let the "friends/family" of the sender know that they
+ * have survived (so far) a disaster
+ *
+ * The spreadsheet files should contains three columns:
+ *
+ * 1) the Name of the sender: for example, Bob
+ *
+ * 2) the Addresses of the recipients, 10 digit SMS address, SMTP email address, or Winlink address. Multiple addressess
+ * are permitted (semi-colon or comma delimited)
+ *
+ * 3) the Text of the message. Since the message might go out via SMS, I check for message length
+ *
+ */
 public class MiasmaBatchTool {
   static final Logger logger = LoggerFactory.getLogger(MiasmaServer.class);
 

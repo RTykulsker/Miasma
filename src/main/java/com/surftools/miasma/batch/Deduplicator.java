@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * because spectrum is scarce and it's just too dang easy to create duplicate messages
+ *
+ * no effort is made to de-duplicate across batches.
  */
 public class Deduplicator {
 

@@ -27,6 +27,9 @@ SOFTWARE.
 
 package com.surftools.miasma.batch;
 
+/**
+ * to handle different file types, such as Excel and Csv
+ */
 public interface IBatchProcessor {
 
   public ProcessResult process();

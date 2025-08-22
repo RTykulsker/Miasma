@@ -30,9 +30,19 @@ package com.surftools.miasma.batch;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * record that contains valid (okList), invalid (errorList) and counts (countContext)
+ *
+ */
 public record ProcessResult(List<SpreadsheetRecord> okList, List<SpreadsheetRecord> errorList,
     CounterContext counterContext) {
 
+  /**
+   * combine the results of another (child) with this
+   *
+   * @param child
+   * @return
+   */
   public ProcessResult merge(ProcessResult child) {
     okList.addAll(child.okList);
     errorList.addAll(child.errorList);

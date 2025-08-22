@@ -78,6 +78,16 @@ public class BatchMessageWriter {
   private final String sender;
   private SmsType smsType;
 
+  /**
+   * write out the various files that will be used to actually send message (writeWinlinkExpresFile), writePatFile
+   *
+   * or
+   *
+   * write files that document what we've done, writeCvsLine, writeCounterContext
+   *
+   * @param cm
+   * @throws Exception
+   */
   public BatchMessageWriter(IConfigurationManager cm) throws Exception {
     this.cm = cm;
 
@@ -229,8 +239,6 @@ public class BatchMessageWriter {
       writeCsvLine(true, message);
     }
   }
-
-  // private
 
   private void writeCsvLine(boolean isOk, BatchOutboundMessage m) {
     if (!isCsvEnabled) {

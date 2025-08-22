@@ -40,6 +40,9 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.surftools.config.IConfigurationManager;
 
+/**
+ * CSV files, because you can create one with a text editor
+ */
 public class CsvBatchProcessor extends BaseBatchProcessor {
   private static final Logger logger = LoggerFactory.getLogger(CsvBatchProcessor.class);
 
@@ -77,7 +80,7 @@ public class CsvBatchProcessor extends BaseBatchProcessor {
         var spreadsheetRecord = new SpreadsheetRecord(batchId, file.getPath(), "n/a", //
             String.valueOf(rowCount), InputStatus.UNKNOWN, //
             fields[0], fields[1], fields[2]);
-        var rowProcessResults = parse(spreadsheetRecord);
+        var rowProcessResults = parseSpreadsheetRecord(spreadsheetRecord);
         processResult.merge(rowProcessResults);
       }
     } catch (Exception e) {
