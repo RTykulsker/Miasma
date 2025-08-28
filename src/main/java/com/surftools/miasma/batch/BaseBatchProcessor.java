@@ -49,6 +49,8 @@ public class BaseBatchProcessor {
   private String lastTo = "";
   private String lastText = "";
 
+  private String altFromColumnName = "";
+
   private int maxMessageLength;
 
   private static boolean isInitialized = false;
@@ -61,6 +63,10 @@ public class BaseBatchProcessor {
     if (!isInitialized) {
       isAutoDitto = cm.getAsBoolean(MiasmaKey.BATCH_AUTO_DITTO_ENABLED, Boolean.FALSE);
       logger.info("IsAutoDitto: " + isAutoDitto);
+
+      altFromColumnName = cm.getAsString(MiasmaKey.BATCH_EXCEL_ALT_FROM_COLUMN_NAME, "");
+      logger.info("Alt 'From' column name: " + altFromColumnName);
+      altFromColumnName = altFromColumnName.toLowerCase();
 
       maxMessageLength = cm.getAsInt(MiasmaKey.BATCH_MAX_MESSAGE_LENGTH, Integer.valueOf(92));
       logger.info("Max Message Length: " + maxMessageLength);
@@ -90,8 +96,8 @@ public class BaseBatchProcessor {
     var errorList = new ArrayList<SpreadsheetRecord>();
     var counterContext = new CounterContext(batchId);
 
-    // ignore headers
-    if (fromValue.toLowerCase().equals("from") && toValue.toLowerCase().equals("to")) {
+    // ignore headers; return "empty" ProcessResult that'll get merged
+    if (inputRecord.rowNumber().equals("1")) {
       return new ProcessResult(okList, errorList, counterContext);
     }
 
@@ -157,6 +163,35 @@ public class BaseBatchProcessor {
     } // end loop over addresses
 
     return new ProcessResult(okList, errorList, counterContext);
+  }
+
+  private boolean isHeader(SpreadsheetRecord inputRecord) {
+    int rowNumber = -1;
+    try {
+      rowNumber = Integer.valueOf(inputRecord.rowNumber());
+    } catch (Exception e) {
+      logger.info("could not parse row number: " + inputRecord.toString());
+      return false;
+    }
+
+    // must be 1
+    if (rowNumber != 1) {
+      return false;
+    }
+
+    // TODO what if from/to are empty?
+
+    var fromValue = inputRecord.from().toLowerCase();
+    if (fromValue.startsWith(altFromColumnName)) {
+      return true;
+    }
+
+    var toValue = inputRecord.to().toLowerCase();
+    if (fromValue.equals("from") && toValue.equals("to")) {
+      return true;
+    }
+
+    return false;
   }
 
   /**

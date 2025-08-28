@@ -78,6 +78,8 @@ public class BatchMessageWriter {
   private final String sender;
   private SmsType smsType;
 
+  private final ExtraText extra;
+
   /**
    * write out the various files that will be used to actually send message (writeWinlinkExpresFile), writePatFile
    *
@@ -103,6 +105,14 @@ public class BatchMessageWriter {
     } else {
       logger.info("SMS provider: " + smsType.toString());
     }
+
+    var prefixText = cm.getAsString(MiasmaKey.BATCH_EXTRA_PREFIX_TEXT, "");
+    var midfixText = cm.getAsString(MiasmaKey.BATCH_EXTRA_MIDFIX_TEXT, "");
+    var suffixText = cm.getAsString(MiasmaKey.BATCH_EXTRA_SUFFIX_TEXT, "");
+    extra = new ExtraText(prefixText, midfixText, suffixText);
+    logger.info("Extra prefix text: " + extra.prefix());
+    logger.info("Extra midfix text: " + extra.midfix());
+    logger.info("Extra suffix text: " + extra.suffix());
 
     var replacementAddress = cm.get(MiasmaKey.APP_WRITER_SMS_REPLACEMENT_EMAIL_ADDRESS);
     if (replacementAddress == null && (smsType == SmsType.EMAIL || smsType == SmsType.RAINBOW)) {
@@ -215,14 +225,14 @@ public class BatchMessageWriter {
     var list = new ArrayList<BatchOutboundMessage>();
     for (var spreadsheetRecord : spreadsheetRecords) {
       if (spreadsheetRecord.status().isEmail()) {
-        var outboundMessage = new BatchOutboundMessage(spreadsheetRecord, null);
+        var outboundMessage = new BatchOutboundMessage(spreadsheetRecord, null, extra);
         list.add(outboundMessage);
       } else {
         if (smsType != SmsType.RAINBOW) {
-          list.add(new BatchOutboundMessage(spreadsheetRecord, smsType));
+          list.add(new BatchOutboundMessage(spreadsheetRecord, smsType, extra));
         } else {
           for (var type : SmsType.RAINBOX_LIST) {
-            list.add(new BatchOutboundMessage(spreadsheetRecord, type));
+            list.add(new BatchOutboundMessage(spreadsheetRecord, type, extra));
           }
         }
       }

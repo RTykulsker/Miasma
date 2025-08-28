@@ -56,7 +56,7 @@ public class ExcelBatchProcessor extends BaseBatchProcessor {
     if (!ignoreSheetString.isEmpty()) {
       var fields = ignoreSheetString.trim().split(",");
       for (var field : fields) {
-        ignoreSheetSet.add(field.trim());
+        ignoreSheetSet.add(field.trim().toLowerCase());
       }
       logger.warn("Will ignore the follow sheet names: " + String.join(", ", ignoreSheetSet));
     }
@@ -89,7 +89,7 @@ public class ExcelBatchProcessor extends BaseBatchProcessor {
       for (var sheet : workbook) {
         ++processResult.counterContext().tabCount;
         var sheetName = sheet.getSheetName();
-        if (ignoreSheetSet.contains(sheetName)) {
+        if (ignoreSheetSet.contains(sheetName.trim().toLowerCase())) {
           logger.warn("Ignoring file/sheet: " + file.getName() + "/" + sheetName);
           continue;
         }

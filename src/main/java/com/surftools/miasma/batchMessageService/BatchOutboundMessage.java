@@ -59,7 +59,7 @@ public class BatchOutboundMessage {
 
   static String smsEmailAddress = null;
 
-  public BatchOutboundMessage(SpreadsheetRecord spreadsheetRecord, SmsType smsType) {
+  public BatchOutboundMessage(SpreadsheetRecord spreadsheetRecord, SmsType smsType, ExtraText extra) {
     this.inputRecord = spreadsheetRecord;
     this.smsType = smsType;
     this.dateTimeAccepted = LocalDateTime.parse(spreadsheetRecord.batchId(), FILE_DTF);
@@ -70,31 +70,44 @@ public class BatchOutboundMessage {
     var imSafe = "I'm safe!"; // or maybe I'M SAFE MSG as per RRI/Quick and WE
 
     var isEmail = spreadsheetRecord.status().isEmail();
+    var suffix = (extra.suffix().isEmpty()) ? "" : "\n" + extra.suffix();
 
     if (isEmail) {
       to = spreadsheetRecord.to();
       subject = imSafe;
-      body = "From " + spreadsheetRecord.from() + " " + FILE_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
-          + spreadsheetRecord.text();
+      body = extra.prefix() + "\n" //
+          + "From " + spreadsheetRecord.from() + " " + FILE_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
+          + extra.midfix() + "\n" //
+          + spreadsheetRecord.text() //
+          + suffix;
     } else {
       switch (smsType) {
       case RRI:
         to = spreadsheetRecord.to() + "@sms.radiorelay.org";
         subject = imSafe;
-        body = "From " + spreadsheetRecord.from() + " " + BODY_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
-            + spreadsheetRecord.text();
+        body = extra.prefix() + "\n" //
+            + "From " + spreadsheetRecord.from() + " " + BODY_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
+            + extra.midfix() + "\n" //
+            + spreadsheetRecord.text() //
+            + suffix;
         break;
 
       case NA7Q:
         to = "sms@hamdesk.com";
         subject = spreadsheetRecord.to();
-        body = imSafe + "\n" + spreadsheetRecord.text();
+        body = extra.prefix() + "\n" //
+            + imSafe + "\n" //
+            + extra.midfix() + "\n" //
+            + spreadsheetRecord.text() //
+            + suffix;
         break;
 
       case PHILIPPINES:
         to = "winlink2sms@gmail.com";
         subject = spreadsheetRecord.to();
-        var oneLineBody = (imSafe + " " + spreadsheetRecord.text()).replaceAll("\r\n", ". ");
+        suffix = extra.suffix().isEmpty() ? "" : ". " + extra.suffix();
+        var oneLineBody = extra.prefix() + ". " + imSafe + " " + extra.midfix() + ". " + spreadsheetRecord.text()
+            + suffix;
 
         body = "From " + spreadsheetRecord.from() + "\n" //
             + "Sent on " + MESSAGE_TIME_DTF.format(dateTimeAccepted).replaceAll("/", "-") + "\n" //
@@ -105,8 +118,13 @@ public class BatchOutboundMessage {
       case EMAIL:
         to = smsEmailAddress;
         subject = imSafe;
-        body = "From " + spreadsheetRecord.from() + " " + BODY_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n"
-            + spreadsheetRecord.text();
+
+        body = extra.prefix() + "\n" //
+            + "From " + spreadsheetRecord.from() + " " + BODY_DTF.format(dateTimeAccepted) + " ONE WAY MSG" + "\n" //
+            + extra.midfix() + "\n" //
+            + spreadsheetRecord.text() //
+            + suffix;
+
         break;
 
       default:

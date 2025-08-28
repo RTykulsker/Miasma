@@ -43,6 +43,10 @@ public enum MiasmaKey {
   BATCH_AUTO_DITTO_ENABLED("batch.auto.ditto.enabled"), //
   BATCH_MAX_MESSAGE_LENGTH("batch.maxMessageLength"), //
   BATCH_EXCEL_IGNORE_SHEET_LIST("batch.excel.ignore.sheet.list"), //
+  BATCH_EXCEL_ALT_FROM_COLUMN_NAME("batch.excel.alt.from.column.name"), //
+  BATCH_EXTRA_PREFIX_TEXT("batch.extra.prefix.text"), // inserted before every message
+  BATCH_EXTRA_MIDFIX_TEXT("batch.extra.midfix.text"), // inserted in middle of every message
+  BATCH_EXTRA_SUFFIX_TEXT("batch.extra.suffix.text"), // inserted after every message
 
   SERVER_PORT("server.port", "5000"), //
   SERVER_SEQUENCE_GENERATOR_PATH("server.sequenceGenerator.path"),

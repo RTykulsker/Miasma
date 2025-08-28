@@ -1,0 +1,12 @@
+app.writer.winlinkExpress.sender=KM6SO
+app.writer.winlinkExpress.path=C:/miasma/batch/output/winlinkExpress
+### app.writer.pat.path=C:/miasma/batch/output/pat
+app.writer.csv.path=C:/miasma/batch/output/csv
+### app.writer.sms.replacementEmailAddress=(null)
+
+batch.inbox.path=C:/miasma/batch/inbox
+### batch.inbox.clean.enabled=true
+batch.processed.path=C:/miasma/batch/processed
+batch.auto.ditto.enabled=true
+###batch.excel.ignore.sheet.list=happy-path,no-header,missing-fields,winlink-to,auto-ditto
+####batch.excel.ignore.sheet.list=missing-fields
