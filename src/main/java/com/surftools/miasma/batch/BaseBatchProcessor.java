@@ -165,35 +165,6 @@ public class BaseBatchProcessor {
     return new ProcessResult(okList, errorList, counterContext);
   }
 
-  private boolean isHeader(SpreadsheetRecord inputRecord) {
-    int rowNumber = -1;
-    try {
-      rowNumber = Integer.valueOf(inputRecord.rowNumber());
-    } catch (Exception e) {
-      logger.info("could not parse row number: " + inputRecord.toString());
-      return false;
-    }
-
-    // must be 1
-    if (rowNumber != 1) {
-      return false;
-    }
-
-    // TODO what if from/to are empty?
-
-    var fromValue = inputRecord.from().toLowerCase();
-    if (fromValue.startsWith(altFromColumnName)) {
-      return true;
-    }
-
-    var toValue = inputRecord.to().toLowerCase();
-    if (fromValue.equals("from") && toValue.equals("to")) {
-      return true;
-    }
-
-    return false;
-  }
-
   /**
    * return a "global" status for an input spreadsheet, without exploding to fields
    *
