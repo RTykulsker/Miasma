@@ -1,0 +1,83 @@
+Requistite software
+	Winlink Express
+	VARA FM, VARA (optional), Soundmodem (optional)
+		credentials for Winlink Express and VARA
+		
+I've placed (almost) everything in a desktop folder, miasma (My I Am Safe Messaging Application)
+			appassembler	the output of my compiler, where the server is
+			bin				where all the local scripts are
+			installers		for necessary 3rd party software, openjdk and pat
+			output			where miasma writes (some) of it's output
+			pat_0.17.0_windows_i386	pat folks distribute a single binary. Hooray for them!
+			soundmodem114	with extra dll for DRA modems
+			
+Java. I run (close to) bleeding edge. JDK 23. Latest MS build was 21. So use 23
+I've included a JDK 23
+	unzip it
+	move it to C:\Program Files
+	add it to System path
+		Win + X; search for env
+		add to system, move to top
+		pop a cmd shell and type> java -version  # to confirm
+		
+		
+		
+edit the appassembler\conf\conf.win.txt file
+	change all paths to reflect current user
+	change call sign
+		
+edit the bin\run-miasma.bat file
+	edit the paths if needed
+	
+edit the bin\FileSystemWatcher.ps1 powershell script
+	edit the paths
+	
+try to run FileSystemWatcher
+	use Powershell ISE
+	if script running disabled, fix it by 
+		Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+		
+configure pat
+	cd bin
+	pat configure          ### or pat http # to use their web interface; browse to localhost:8000
+		mycall
+		secure_login_password
+		connect_aliases
+			 "W7MIR-10": "varafm:///W7MIR-10",
+			 "PACKET-W7MIR-10": "ax25:///W7MIR-10"
+			 etc
+			 
+			 
+	try a "pat connect telnet" or pat connect <your vara or packet> to confirm		 
+	
+			
+automatically launching pat when client submits a message
+	I've tried a *LOT* of ways to make this happen, but nothing seems robust
+		-- ProcessBuilder() in server to start a pat process
+		-- ProcessBuilder() in server to run a command
+			kill vara, start vara
+			start pat
+		-- PAT running with it's own cron job every minute
+		-- Powershell FileSystemWatcher
+	
+	At this time, my recommendation is:
+		before each demonstation, 
+			ensure that VARA-FM is running
+			ensure the FileSystemWatcher script is running inside of Powershell ISE
+			a second radio is on and tuned to frequency to hear TX and RX
+			a command window is open in bin;  is ready
+		if FileSystemWatcher fails to launch PAT
+			explain to folks 
+				"this is only a demo"
+				Bob is not a Windows expert
+				pat --send-only -ignore-busy W7MIR-10
+				
+		CONFIRM that you can launch PAT from within the PowerShell ISE by touching a file
+			in the output/pat/mailbox/<yourcall>/out folder. 
+			DON'T procede until you can
+		
+		
+		
+			
+		
+		
