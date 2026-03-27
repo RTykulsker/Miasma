@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.surftools</groupId>
 	<artifactId>miasma</artifactId>
-	<version>0.3.0</version>
+	<version>2.0.1</version>
 
 	<name>Miasma</name>
 	<url>http://maven.apache.org</url>
@@ -11,7 +11,7 @@
 	<properties>
   		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<java.version>23</java.version>
+		<java.version>26</java.version>
 		<maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
 		<maven.appassembler.plugin.version>1.10</maven.appassembler.plugin.version>
 
@@ -87,6 +87,14 @@
     		<artifactId>poi-ooxml</artifactId>
     		<version>${poi.version}</version>
 		</dependency>
+		
+		<!-- Source: https://mvnrepository.com/artifact/com.diogonunes/JColor -->
+		<dependency>
+		    <groupId>com.diogonunes</groupId>
+		    <artifactId>JColor</artifactId>
+		    <version>5.5.1</version>
+		    <scope>compile</scope>
+		</dependency>		
 
 		<dependency>
 			<groupId>junit</groupId>
@@ -138,13 +146,9 @@
 					</platforms>					
 					<programs>
 						<program>
-							<mainClass>com.surftools.miasma.web.MiasmaServer</mainClass>
-							<id>miasmaServer</id>
-						</program>
-						<program>
-							<mainClass>com.surftools.miasma.batch.MiasmaBatchTool</mainClass>
-							<id>miasmaBatch</id>
-						</program>
+							<mainClass>com.surftools.miasma.MiasmaApp</mainClass>
+							<id>miasmaSerApp</id>
+						</program>					
 					</programs>
 				</configuration>
 			</plugin>

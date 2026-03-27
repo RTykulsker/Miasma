@@ -1,7 +1,7 @@
 #MIASMA
 
 ## Purpose
-The MIASMA (My I Am Safe Messaging App) is a simple web site/service that presents a form to all for the creation of Winlink/RRI/Quick Message email or SMS message. The app writes files that can be imported by both Winlink Express and PAT for transmission via radio
+The MIASMA (My I Am Safe Messaging App) is a simple web site/service that presents a form to all for the creation of Winlink/RRI/Quick Message email or SMS message. The app writes files that can be imported by PAT for transmission via radio
 
 ## Features
 - runs on Windows, MacOs, Linux platforms
@@ -10,13 +10,11 @@ The MIASMA (My I Am Safe Messaging App) is a simple web site/service that presen
 - unzip anywhere
 
 ## Running
-- bin/ptpreporter
+- bin/miasma
 
 ## Example
 browse to 
 - http://localhost:5000
-or
-- http://localhost:7000/info
 
 ## Arguments
 - --conf path to configuration file

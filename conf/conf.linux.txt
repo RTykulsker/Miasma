@@ -1,13 +1,11 @@
 #
-app.sms.type=philippines
-app.writer.sms.replacementEmailAddress=RTykulsker@gmail.com
+root.path=/home/bobt/Documents/miasma/v2/
 
-app.writer.csv.path:/home/bobt/Documents/miasma/csv
-app.writer.pat.path:/home/bobt/Documents/miasma/pat/mailbox
-app.writer.winlinkExpress.path:/home/bobt/Documents/miasma/winlinkExpress
-app.writer.winlinkExpress.sender:KM6SO
+app.sms.replacementEmailAddress=RTykulsker@gmail.com
+app.pat.path:/home/bobt/Documents/miasma/pat/mailbox
+app.winlinkExpress.sender:KM6SO
+
+batch.excel.ignore.sheet.list=template,instructions
 
 server.port:5000
-server.sequenceGenerator.path=/home/bobt/Documents/miasma/sequenceNumber.txt
 
-template.cache.files:false

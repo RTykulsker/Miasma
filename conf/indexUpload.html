@@ -7,7 +7,7 @@
 rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
     crossorigin="anonymous">
-<title>I'm safe</title>
+<title>I'm safe></title>
 </head>
 
 <body>
@@ -21,15 +21,14 @@ rel="stylesheet"
 	You can compose a short message and we'll send that message, via 
 	<strong>ham (amateur) radio </strong> to a location with Internet access.
 	<p/><p/>
-	First, choose how you want us to <strong>deliver</strong> your message, via Email or via SMS?
+	You compose your messages in a spreadsheet file too and upload them from here ...
 </div>
 
 <p/>
-<span>
-	<a href="/chooseEmail" class="btn btn-primary" role="button">Email</a>
-	<span> or </span>
-	<a href="/chooseSMS" class="btn btn-primary" role="button">SMS</a>
-</span>
+<form method="post" action="/uploadResponse" enctype="multipart/form-data">
+    <input  class="btn btn-primary" type="file" name="files" multiple>
+    <button class="btn btn-primary">Submit</button>
+</form>
 <p/><p/><p>
 
 <div>
