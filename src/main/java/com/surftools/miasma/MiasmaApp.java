@@ -17,20 +17,20 @@ import org.slf4j.LoggerFactory;
 
 import com.diogonunes.jcolor.Ansi;
 import com.diogonunes.jcolor.Attribute;
-import com.surftools.miasmaV2.config.IConfigurationManager;
-import com.surftools.miasmaV2.config.MiasmaKey;
-import com.surftools.miasmaV2.config.PropertyFileConfigurationManager;
-import com.surftools.miasmaV2.io.CsvMessageReader;
-import com.surftools.miasmaV2.io.ExcelMessageReader;
-import com.surftools.miasmaV2.io.FileSource;
-import com.surftools.miasmaV2.io.FileType;
-import com.surftools.miasmaV2.io.IMessageReader;
-import com.surftools.miasmaV2.io.IoUtils;
-import com.surftools.miasmaV2.io.TextMessageReader;
-import com.surftools.miasmaV2.io.WebMessageReader;
-import com.surftools.miasmaV2.web.WebServer;
-import com.surftools.miasmaV2.winlink.IWinlinkFormatter;
-import com.surftools.miasmaV2.winlink.PatWinlinkFormatter;
+import com.surftools.miasma.config.IConfigurationManager;
+import com.surftools.miasma.config.MiasmaKey;
+import com.surftools.miasma.config.PropertyFileConfigurationManager;
+import com.surftools.miasma.io.CsvMessageReader;
+import com.surftools.miasma.io.ExcelMessageReader;
+import com.surftools.miasma.io.FileSource;
+import com.surftools.miasma.io.FileType;
+import com.surftools.miasma.io.IMessageReader;
+import com.surftools.miasma.io.IoUtils;
+import com.surftools.miasma.io.TextMessageReader;
+import com.surftools.miasma.io.WebMessageReader;
+import com.surftools.miasma.web.WebServer;
+import com.surftools.miasma.winlink.IWinlinkFormatter;
+import com.surftools.miasma.winlink.PatWinlinkFormatter;
 
 /**
  * main class for miasma (My I Am Safe Messaging Application)

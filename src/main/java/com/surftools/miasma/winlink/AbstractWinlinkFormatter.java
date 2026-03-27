@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.winlink;
+package com.surftools.miasma.winlink;
 
 import java.nio.file.Path;
 import java.security.MessageDigest;
@@ -40,11 +40,11 @@ import org.slf4j.LoggerFactory;
 
 import com.diogonunes.jcolor.Ansi;
 import com.diogonunes.jcolor.Attribute;
-import com.surftools.miasmaV2.config.IConfigurationManager;
-import com.surftools.miasmaV2.config.MiasmaKey;
-import com.surftools.miasmaV2.io.IASMessage;
-import com.surftools.miasmaV2.io.IoUtils;
-import com.surftools.miasmaV2.io.MessageWriter;
+import com.surftools.miasma.config.IConfigurationManager;
+import com.surftools.miasma.config.MiasmaKey;
+import com.surftools.miasma.io.IASMessage;
+import com.surftools.miasma.io.IoUtils;
+import com.surftools.miasma.io.MessageWriter;
 
 /**
  * common methods for all @IWinlinkFormatter classes

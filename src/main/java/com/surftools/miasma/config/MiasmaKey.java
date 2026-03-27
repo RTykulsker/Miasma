@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.config;
+package com.surftools.miasma.config;
 
 public enum MiasmaKey {
   ROOT_PATH("root.path"), // where all other paths are homed from

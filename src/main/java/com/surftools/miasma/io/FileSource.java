@@ -25,25 +25,13 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.winlink;
-
-import java.nio.file.Path;
-import java.util.List;
-
-import com.surftools.miasmaV2.io.IASMessage;
+package com.surftools.miasma.io;
 
 /**
- * interface that all WinlinkFormatters must implement
+ * the various types of files that we can read
  */
-public interface IWinlinkFormatter {
-
-  /**
-   * format a list of zero or more messages into zero or more items for transmission via Winlink
-   *
-   * NOTE WELL: a single @IASMessage can expand into multiple entries for Winlink
-   *
-   * @param messages
-   * @param inboxFilePath
-   */
-  public void format(List<IASMessage> messages, Path inboxFilePath);
+public enum FileSource {
+  WEB, // BYOD
+  UPLOAD, // also web, but a file, such as xlsx
+  FILE; // a file that "somehow" lands in the inbox
 }

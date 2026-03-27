@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.config;
+package com.surftools.miasma.config;
 
 import java.io.File;
 import java.io.FileInputStream;

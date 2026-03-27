@@ -25,13 +25,13 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.web;
+package com.surftools.miasma.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.surftools.miasmaV2.config.IConfigurationManager;
-import com.surftools.miasmaV2.config.MiasmaKey;
+import com.surftools.miasma.config.IConfigurationManager;
+import com.surftools.miasma.config.MiasmaKey;
 
 import io.javalin.http.Context;
 

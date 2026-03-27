@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.io;
+package com.surftools.miasma.io;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,51 +40,44 @@ import org.slf4j.LoggerFactory;
 /**
  * text file input: fromName,toAddress and text on separate lines
  *
- * multiple messages allowed
+ * multiple messages not allowed
  */
-public class TextMessageReader implements IMessageReader {
-  static final Logger logger = LoggerFactory.getLogger(TextMessageReader.class);
+public class WebMessageReader implements IMessageReader {
+  static final Logger logger = LoggerFactory.getLogger(WebMessageReader.class);
 
   @Override
   public List<IASMessage> readFile(Path path, FileType fileType, FileSource fileSource) {
     var list = new ArrayList<IASMessage>();
-    try {
-      var fromName = "";
-      var toAddress = "";
-      var text = "";
-      var now = LocalDateTime.now();
-      var dateString = now.toLocalDate().toString();
-      var timeString = now.toLocalTime().truncatedTo(ChronoUnit.SECONDS).toString();
-      var fileName = path.getFileName().toString();
-      var fileTypeName = fileType.name();
-      var fileSourceName = fileSource.name();
-      var messageId = "";
+    var now = LocalDateTime.now();
+    var dateString = now.toLocalDate().toString();
+    var timeString = now.toLocalTime().truncatedTo(ChronoUnit.SECONDS).toString();
+    var fileName = path.getFileName().toString();
+    var fileTypeName = fileType.name();
+    var fileSourceName = fileSource.name();
+    var messageId = "";
 
+    try {
       var lines = Files.readAllLines(path);
-      var state = 0;
-      logger.debug("read " + lines.size() + " lines from file: " + path.getFileName());
-      for (var line : lines) {
-        if (state == 0) {
-          fromName = line.strip();
-          state = 1;
-          continue;
-        } else if (state == 1) {
-          toAddress = line.strip();
-          state = 2;
-          continue;
-        } else {
-          text = line.strip();
-          var metadata = "";
-          var message = new IASMessage(fromName, toAddress, text, dateString, timeString, fileName, fileTypeName,
-              fileSourceName, messageId, metadata);
-          list.add(message);
-          state = 0;
-        }
+      if (lines.size() >= 3) {
+        var fromName = lines.get(0).strip();
+        var toAddress = lines.get(1).strip();
+        var text = lines.get(2).strip();
+        var metadata = getMetadata(path, fromName, toAddress, text, dateString, timeString, fileName, fileTypeName);
+        var message = new IASMessage(fromName, toAddress, text, dateString, timeString, fileName, fileTypeName,
+            fileSourceName, messageId, metadata);
+        list.add(message);
       }
     } catch (Exception e) {
       logger.error("Exception reading file: " + path.getFileName() + ", " + e.getMessage());
     }
-    logger.debug("returning " + list.size() + " messages from file: " + path.getFileName());
+
+    logger.info("returning " + list.size() + " messages from file: " + path.getFileName());
     return list;
   }
+
+  protected String getMetadata(Path path, String fromName, String toAddress, String text, //
+      String dateString, String timeString, String fileName, String fileTypeName) {
+    return "";
+  }
+
 }

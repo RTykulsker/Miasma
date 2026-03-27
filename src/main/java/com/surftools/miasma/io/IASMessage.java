@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.io;
+package com.surftools.miasma.io;
 
 /**
  * an I Am Safe message, the primary DTO (Data Transfer Object

@@ -25,42 +25,12 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.io;
+package com.surftools.miasma.io;
 
-import java.io.FileWriter;
-import java.nio.file.Path;
+public interface IWritable extends Comparable<IWritable> {
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+  public String[] getHeaders();
 
-import com.opencsv.CSVWriter;
+  public String[] getValues();
 
-public class MessageWriter {
-  static final Logger logger = LoggerFactory.getLogger(MessageWriter.class);
-
-  /**
-   * write an IASMessage to a file. Create the file if needed
-   *
-   * @param path
-   * @param message
-   */
-  public static void writeMessage(Path path, IASMessage message) {
-    try {
-      var parentPath = path.getParent();
-      IoUtils.makeDirIfNeeded(parentPath);
-
-      var file = path.toFile();
-      var needsHeader = !file.exists();
-
-      CSVWriter writer = new CSVWriter(new FileWriter(path.toString(), true));
-      if (needsHeader) {
-        writer.writeNext(message.getHeaders());
-      }
-      writer.writeNext(message.getValues());
-      writer.close();
-      logger.debug("wrote: " + message + " to: " + path);
-    } catch (Exception e) {
-      logger.error("Exception writing file: " + path + ", " + e.getLocalizedMessage());
-    }
-  }
 }

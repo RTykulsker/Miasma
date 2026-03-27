@@ -25,13 +25,22 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.io;
+package com.surftools.miasma.io;
+
+import java.nio.file.Path;
+import java.util.List;
 
 /**
- * the various types of files that we can read
+ * interface that all MessageReaders must implement
  */
-public enum FileSource {
-  WEB, // BYOD
-  UPLOAD, // also web, but a file, such as xlsx
-  FILE; // a file that "somehow" lands in the inbox
+public interface IMessageReader {
+
+  /**
+   * return a list of zero or more @IASMessage
+   *
+   * @param path
+   * @param fileType
+   * @return
+   */
+  public List<IASMessage> readFile(Path path, FileType fileType, FileSource fileSource);
 }

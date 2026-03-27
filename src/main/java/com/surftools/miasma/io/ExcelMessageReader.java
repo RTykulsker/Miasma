@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.io;
+package com.surftools.miasma.io;
 
 import java.io.FileInputStream;
 import java.nio.file.Path;
@@ -45,8 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.surftools.miasma.MiasmaApp;
-import com.surftools.miasmaV2.config.IConfigurationManager;
-import com.surftools.miasmaV2.config.MiasmaKey;
+import com.surftools.miasma.config.IConfigurationManager;
+import com.surftools.miasma.config.MiasmaKey;
 
 public class ExcelMessageReader implements IMessageReader {
   private static final Logger logger = LoggerFactory.getLogger(MiasmaApp.class);

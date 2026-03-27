@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2026, Robert Tykulsker
+Copyright (c) 2022, Robert Tykulsker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,11 +25,33 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.winlink;
+package com.surftools.miasma.web;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import org.eclipse.jetty.http.HttpStatus;
+
+import com.surftools.miasma.config.IConfigurationManager;
+import com.surftools.miasma.config.MiasmaKey;
+
+import io.javalin.http.Context;
+import io.javalin.http.Handler;
 
 /**
- * in theory, there can be multiple providers...
+ * for static html pages
  */
-public enum SmsProvider {
-  RRI
+public class StaticHandler implements Handler {
+  protected final String html;
+
+  public StaticHandler(IConfigurationManager cm, MiasmaKey miasmaKey) throws Exception {
+    html = Files.readString(Path.of(cm.getAsString(miasmaKey)));
+  }
+
+  @Override
+  public void handle(Context ctx) throws Exception {
+    ctx.html(html);
+    ctx.status(HttpStatus.OK_200);
+  } // end handle()
+
 }

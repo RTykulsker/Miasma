@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2019, Robert Tykulsker
+Copyright (c) 2026, Robert Tykulsker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,22 +25,11 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.config;
+package com.surftools.miasma.winlink;
 
-public interface IConfigurationManager {
-
-  public String getAsString(MiasmaKey key);
-
-  public String getAsString(MiasmaKey key, String defaultValue);
-
-  public int getAsInt(MiasmaKey key);
-
-  public int getAsInt(MiasmaKey key, Integer defaultValue);
-
-  public boolean getAsBoolean(MiasmaKey key);
-
-  public boolean getAsBoolean(MiasmaKey key, Boolean defaultValue);
-
-  public String get(MiasmaKey key);
-
+/**
+ * in theory, there can be multiple providers...
+ */
+public enum SmsProvider {
+  RRI
 }

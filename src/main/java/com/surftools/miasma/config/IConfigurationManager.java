@@ -2,7 +2,7 @@
 
 The MIT License (MIT)
 
-Copyright (c) 2022, Robert Tykulsker
+Copyright (c) 2019, Robert Tykulsker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,33 +25,22 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.web;
+package com.surftools.miasma.config;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+public interface IConfigurationManager {
 
-import org.eclipse.jetty.http.HttpStatus;
+  public String getAsString(MiasmaKey key);
 
-import com.surftools.miasmaV2.config.IConfigurationManager;
-import com.surftools.miasmaV2.config.MiasmaKey;
+  public String getAsString(MiasmaKey key, String defaultValue);
 
-import io.javalin.http.Context;
-import io.javalin.http.Handler;
+  public int getAsInt(MiasmaKey key);
 
-/**
- * for static html pages
- */
-public class StaticHandler implements Handler {
-  protected final String html;
+  public int getAsInt(MiasmaKey key, Integer defaultValue);
 
-  public StaticHandler(IConfigurationManager cm, MiasmaKey miasmaKey) throws Exception {
-    html = Files.readString(Path.of(cm.getAsString(miasmaKey)));
-  }
+  public boolean getAsBoolean(MiasmaKey key);
 
-  @Override
-  public void handle(Context ctx) throws Exception {
-    ctx.html(html);
-    ctx.status(HttpStatus.OK_200);
-  } // end handle()
+  public boolean getAsBoolean(MiasmaKey key, Boolean defaultValue);
+
+  public String get(MiasmaKey key);
 
 }

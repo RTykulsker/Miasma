@@ -25,12 +25,25 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.io;
+package com.surftools.miasma.winlink;
 
-public interface IWritable extends Comparable<IWritable> {
+import java.nio.file.Path;
+import java.util.List;
 
-  public String[] getHeaders();
+import com.surftools.miasma.io.IASMessage;
 
-  public String[] getValues();
+/**
+ * interface that all WinlinkFormatters must implement
+ */
+public interface IWinlinkFormatter {
 
+  /**
+   * format a list of zero or more messages into zero or more items for transmission via Winlink
+   *
+   * NOTE WELL: a single @IASMessage can expand into multiple entries for Winlink
+   *
+   * @param messages
+   * @param inboxFilePath
+   */
+  public void format(List<IASMessage> messages, Path inboxFilePath);
 }

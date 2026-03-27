@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.web;
+package com.surftools.miasma.web;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,8 +33,8 @@ import java.nio.file.Path;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 
-import com.surftools.miasmaV2.config.IConfigurationManager;
-import com.surftools.miasmaV2.config.MiasmaKey;
+import com.surftools.miasma.config.IConfigurationManager;
+import com.surftools.miasma.config.MiasmaKey;
 
 import io.javalin.http.ContentType;
 import io.javalin.http.Context;

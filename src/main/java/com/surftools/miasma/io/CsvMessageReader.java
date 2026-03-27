@@ -25,7 +25,7 @@ SOFTWARE.
 
 */
 
-package com.surftools.miasmaV2.io;
+package com.surftools.miasma.io;
 
 import java.io.FileReader;
 import java.io.Reader;
@@ -43,8 +43,8 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.surftools.miasma.MiasmaApp;
-import com.surftools.miasmaV2.config.IConfigurationManager;
-import com.surftools.miasmaV2.config.MiasmaKey;
+import com.surftools.miasma.config.IConfigurationManager;
+import com.surftools.miasma.config.MiasmaKey;
 
 public class CsvMessageReader implements IMessageReader {
   private static final Logger logger = LoggerFactory.getLogger(MiasmaApp.class);
