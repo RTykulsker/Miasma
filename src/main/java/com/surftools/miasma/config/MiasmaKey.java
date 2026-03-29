@@ -33,6 +33,7 @@ public enum MiasmaKey {
   APP_SMS_REPLACEMENT_EMAIL_ADDRESS("app.sms.replacementEmailAddress"), //
   APP_PAT_PATH("app.pat.path"), // might be outside of root, ends with mailbox, before call
   APP_WINLINK_EXPRESS_SENDER("app.winlinkExpress.sender"), //
+  APP_COLOR_TEXT_ENABLED("app.color.text.enabled"), //
 
   BATCH_AUTO_DITTO_ENABLED("batch.auto.ditto.enabled"), //
   BATCH_EXCEL_IGNORE_SHEET_LIST("batch.excel.ignore.sheet.list"), //
@@ -51,6 +52,7 @@ public enum MiasmaKey {
   TEMPLATE_THANKS_UPLOAD_FILE_NAME("template.thanksUpload.fileName", "conf/thanksUpload.html"), //
   TEMPLATE_ABOUT_FILE_NAME("template.about.fileName", "conf/about.html"), //
   TEMPLATE_ACKNOWLEDGEMENTS_FILE_NAME("template.acknowledgements.fileName", "conf/acknowledgements.html") //
+
   ;
 
   private final String key;

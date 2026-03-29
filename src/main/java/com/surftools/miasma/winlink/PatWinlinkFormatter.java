@@ -37,8 +37,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.diogonunes.jcolor.Ansi;
-import com.diogonunes.jcolor.Attribute;
+import com.surftools.miasma.ColorLogger;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 import com.surftools.miasma.io.IASMessage;
@@ -52,9 +51,11 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
   protected String sender;
   protected String smsEmailReplacementAddress;
   protected String patPathString;
+  protected ColorLogger clog;
 
   public PatWinlinkFormatter(IConfigurationManager cm) {
     super(cm);
+    clog = new ColorLogger(logger, cm);
 
     sender = cm.getAsString(MiasmaKey.APP_WINLINK_EXPRESS_SENDER);
     smsEmailReplacementAddress = cm.getAsString(MiasmaKey.APP_SMS_REPLACEMENT_EMAIL_ADDRESS);
@@ -64,19 +65,8 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
     IoUtils.makeDirIfNeeded(Path.of(patPathString, sender));
     for (var patDir : List.of("archive", "in", "out", "sent")) {
       var path = IoUtils.makeDirIfNeeded(Path.of(patPathString, sender, patDir));
-      logger.info(colorize("using PAT dir: " + path.toString(), patDir.equals("out")));
+      clog.log(patDir.equals("out") ? "ok" : "error", "using PAT dir: " + path.toString());
     }
-  }
-
-  private String colorize(String string, boolean isOk) {
-    final var okText = Attribute.BLACK_TEXT();
-    final var okBackground = Attribute.GREEN_BACK();
-    final var failText = Attribute.WHITE_TEXT();
-    final var failBackground = Attribute.RED_BACK();
-
-    var text = isOk ? okText : failText;
-    var background = isOk ? okBackground : failBackground;
-    return Ansi.colorize(string, text, background);
   }
 
   @Override
@@ -85,10 +75,7 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
       logger.debug("received empty message list");
       return;
     }
-    logger
-        .info(Ansi
-            .colorize("received: " + messages.size() + " IASMessages from: " + inboxFilePath.getFileName(),
-                Attribute.WHITE_TEXT(), Attribute.BLUE_BACK()));
+    clog.log("info", "received: " + messages.size() + " IASMessages from: " + inboxFilePath.getFileName());
     super.format(messages, inboxFilePath);
   }
 
@@ -118,7 +105,7 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
       var acceptedMessage = m.updateMessageId(messageId);
       acceptedMessage = acceptedMessage.updateMetadata("isEmail: " + isEmail);
       MessageWriter.writeMessage(acceptedMessagePath, acceptedMessage);
-      logger.info(colorize("wrote PAT b2f file: " + messageId, true));
+      clog.log("ok", "wrote PAT b2f file: " + messageId);
     } catch (Exception e) {
       logger.error("Exception writing b2f file: " + path + ", " + e.getLocalizedMessage());
     }

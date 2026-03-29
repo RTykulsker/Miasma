@@ -15,8 +15,6 @@ import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.diogonunes.jcolor.Ansi;
-import com.diogonunes.jcolor.Attribute;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 import com.surftools.miasma.config.PropertyFileConfigurationManager;
@@ -51,6 +49,7 @@ public class MiasmaApp {
   protected Path unsupportedPath;
 
   protected Map<FileType, IMessageReader> fileTypeReaderMap;
+  protected ColorLogger clog;
 
   @Option(name = "--conf", usage = "name of configuration file", required = true)
   private String confFileName = null;
@@ -113,6 +112,7 @@ public class MiasmaApp {
 
   private void initialize() throws Exception {
     cm = new PropertyFileConfigurationManager(confFileName, MiasmaKey.values());
+    clog = new ColorLogger(logger, cm);
     var rootPathString = cm.getAsString(MiasmaKey.ROOT_PATH);
     rootPath = Path.of(rootPathString);
     logger.info("rootPath: " + rootPathString);
@@ -154,14 +154,14 @@ public class MiasmaApp {
     // we can't process directories, move them into unsupported
     if (fileType == FileType.DIRECTORY) {
       var unsupportedFilePath = IoUtils.moveWithFileName(pendingFilePath.toAbsolutePath(), unsupportedPath);
-      logger.warn(warn("Can't process directory. Moved to: " + unsupportedFilePath));
+      clog.log("warn", "Can't process directory. Moved to: " + unsupportedFilePath);
       return;
     }
 
     // non-spreadsheet, text or web files, move them into unsupported
     if (fileType == FileType.UNSUPPORTED) {
       var unsupportedFilePath = IoUtils.moveWithFileName(pendingFilePath.toAbsolutePath(), unsupportedPath);
-      logger.warn(warn("Can't process unsupported file type. Moved to: " + unsupportedFilePath));
+      clog.log("warn", "Can't process unsupported file type. Moved to: " + unsupportedFilePath);
       return;
     }
 
@@ -174,7 +174,4 @@ public class MiasmaApp {
     logger.debug("end processFile, moved to: " + outboxFilePath);
   }
 
-  private String warn(String s) {
-    return Ansi.colorize(s, Attribute.BLACK_TEXT(), Attribute.YELLOW_BACK());
-  }
 }
