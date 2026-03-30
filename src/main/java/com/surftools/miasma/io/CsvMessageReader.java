@@ -76,6 +76,9 @@ public class CsvMessageReader implements IMessageReader {
       var fromName = fields.length >= 1 ? fields[0].strip() : "";
       var toAddresses = fields.length >= 2 ? fields[1].strip() : "";
       var text = fields.length >= 3 ? fields[2].strip() : "";
+      if (fromName.isEmpty() && toAddresses.isEmpty() && text.isEmpty()) {
+        continue;
+      }
       if (isAutoDittoEnabled) {
         fromName = !fromName.isEmpty() ? fromName : lastFromName;
         toAddresses = !toAddresses.isEmpty() ? toAddresses : lastToAddresses;

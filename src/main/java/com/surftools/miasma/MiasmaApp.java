@@ -34,9 +34,6 @@ import com.surftools.miasma.winlink.PatWinlinkFormatter;
  * main class for miasma (My I Am Safe Messaging Application)
  */
 
-/**
- * old miasma 2218 lines of code
- */
 public class MiasmaApp {
   private static final Logger logger = LoggerFactory.getLogger(MiasmaApp.class);
   protected Path rootPath;
@@ -71,17 +68,18 @@ public class MiasmaApp {
     logger.info("begin run");
     initialize();
 
-    try (var stream = Files.newDirectoryStream(inboxPath)) {
-      logger.info("Processing files already in inbox");
-      for (var path : stream) {
-        processFile(path);
-      }
-      stream.close();
+    var stream = Files.newDirectoryStream(inboxPath);
+    logger.info("Processing files already in inbox");
+    for (var path : stream) {
+      processFile(path);
+    }
+    stream.close();
 
-      WatchService watchService = FileSystems.getDefault().newWatchService();
-      inboxPath.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
-      logger.info("Watching for changes to in " + inboxPath);
-      while (true) {
+    WatchService watchService = FileSystems.getDefault().newWatchService();
+    inboxPath.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
+    logger.info("Watching for changes to in " + inboxPath);
+    while (true) {
+      try {
         WatchKey key = watchService.take(); // Wait for a watch event
         for (WatchEvent<?> event : key.pollEvents()) {
           WatchEvent.Kind<?> kind = event.kind();
@@ -100,14 +98,11 @@ public class MiasmaApp {
             break;
           }
         } // end poll for events
-
-      } // end while true
-    } catch (Exception e) {
-      logger.error("Exception in Miasma: " + e.getMessage());
-      e.printStackTrace();
-    } // end catch
-
-    logger.info("end run");
+      } catch (Exception e) {
+        logger.error("Exception in Miasma: " + e.getMessage());
+        e.printStackTrace();
+      }
+    } // end while true
   }
 
   private void initialize() throws Exception {

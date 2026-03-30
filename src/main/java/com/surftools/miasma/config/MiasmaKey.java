@@ -51,6 +51,8 @@ public enum MiasmaKey {
   TEMPLATE_INDEX_UPLOAD_FILE_NAME("template.indexUpload.fileName", "conf/indexUpload.html"), //
   TEMPLATE_THANKS_UPLOAD_FILE_NAME("template.thanksUpload.fileName", "conf/thanksUpload.html"), //
   TEMPLATE_ABOUT_FILE_NAME("template.about.fileName", "conf/about.html"), //
+  TEMPLATE_DOWNLOAD_FILE_NAME("template.download.fileName", "conf/download.html"), //
+  TEMPLATE_TEMPLATE_FILE_NAME("template.template.fileName", "conf/miasma-template.xlsx"), //
   TEMPLATE_ACKNOWLEDGEMENTS_FILE_NAME("template.acknowledgements.fileName", "conf/acknowledgements.html") //
 
   ;

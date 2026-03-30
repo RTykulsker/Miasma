@@ -106,6 +106,9 @@ public class ExcelMessageReader implements IMessageReader {
           var fromName = getStringValue(row, 0);
           var toAddresses = getStringValue(row, 1);
           var text = getStringValue(row, 2);
+          if (fromName.isEmpty() && toAddresses.isEmpty() && text.isEmpty()) {
+            continue;
+          }
           if (isAutoDittoEnabled) {
             fromName = !fromName.isEmpty() ? fromName : lastFromName;
             toAddresses = !toAddresses.isEmpty() ? toAddresses : lastToAddresses;

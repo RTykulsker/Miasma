@@ -67,8 +67,8 @@ public class IoUtils {
   public static Path moveWithFileName(Path fromFilePath, Path toDirPath) throws Exception {
     makeDirIfNeeded(toDirPath);
     var toFilePath = Path.of(toDirPath.toString(), fromFilePath.getFileName().toString());
-    Files.move(fromFilePath.toAbsolutePath(), toFilePath);
-    return toFilePath;
+    var returnPath = Files.move(fromFilePath.toAbsolutePath(), toFilePath);
+    return returnPath;
   }
 
   /**

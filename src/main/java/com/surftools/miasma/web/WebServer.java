@@ -67,6 +67,10 @@ public class WebServer {
 
     app.get("/about", new StaticHandler(cm, MiasmaKey.TEMPLATE_ABOUT_FILE_NAME));
     app.get("/acknowledgements", new StaticHandler(cm, MiasmaKey.TEMPLATE_ACKNOWLEDGEMENTS_FILE_NAME));
+
+    app.get("/download", new StaticHandler(cm, MiasmaKey.TEMPLATE_DOWNLOAD_FILE_NAME));
+    app.get("/template", new TemplateHandler(cm));
+
     var port = cm.getAsInt(MiasmaKey.SERVER_PORT, DEFAULT_SERVER_PORT);
     app.start(port);
 
