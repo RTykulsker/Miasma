@@ -44,18 +44,19 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.surftools.miasma.Colorizer;
 import com.surftools.miasma.MiasmaApp;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 
 public class ExcelMessageReader implements IMessageReader {
   private static final Logger logger = LoggerFactory.getLogger(MiasmaApp.class);
-
+  private Colorizer cz;
   boolean isAutoDittoEnabled = true;
-
   private Set<String> ignoreSheetSet;
 
   public ExcelMessageReader(IConfigurationManager cm) {
+    cz = new Colorizer(cm);
     isAutoDittoEnabled = cm.getAsBoolean(MiasmaKey.BATCH_AUTO_DITTO_ENABLED, isAutoDittoEnabled);
 
     ignoreSheetSet = new LinkedHashSet<String>();
@@ -87,7 +88,7 @@ public class ExcelMessageReader implements IMessageReader {
       for (var sheet : workbook) {
         var sheetName = sheet.getSheetName();
         if (ignoreSheetSet.contains(sheetName.strip().toLowerCase())) {
-          logger.warn("Ignoring file/sheet: " + file.getName() + "/" + sheetName);
+          logger.info(cz.color("warn", "Ignoring file/sheet: " + file.getName() + "/" + sheetName));
           continue;
         }
         logger.debug("processing sheet: " + sheet.getSheetName());

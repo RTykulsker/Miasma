@@ -30,14 +30,12 @@ package com.surftools.miasma;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-
 import com.diogonunes.jcolor.Ansi;
 import com.diogonunes.jcolor.Attribute;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 
-public class ColorLogger {
+public class Colorizer {
   record Attributes(Attribute text, Attribute back) {
   };
 
@@ -53,26 +51,24 @@ public class ColorLogger {
     colorMap.put("warn2", new Attributes(Attribute.BLACK_TEXT(), Attribute.BACK_COLOR(255, 165, 0)));
   }
 
-  private Logger logger;
   private boolean isColorEnabled;
 
-  public ColorLogger(Logger logger, IConfigurationManager cm) {
-    this.logger = logger;
+  public Colorizer(IConfigurationManager cm) {
     isColorEnabled = cm.getAsBoolean(MiasmaKey.APP_COLOR_TEXT_ENABLED, true);
 
     if (!isMapDumped && isColorEnabled) {
       for (var key : colorMap.keySet()) {
-        log(key, "this is for color key: " + key);
+        System.out.println(color(key, "this is for color key: " + key));
       }
       isMapDumped = true;
     }
   }
 
-  public void log(String key, String text) {
+  public String color(String key, String text) {
     var attributes = colorMap.get(key);
     if (attributes != null && isColorEnabled) {
       text = Ansi.colorize(text, attributes.text, attributes.back);
     }
-    logger.info(text);
+    return text;
   }
 }

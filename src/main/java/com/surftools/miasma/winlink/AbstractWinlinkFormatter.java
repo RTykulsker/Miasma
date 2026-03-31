@@ -38,7 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.surftools.miasma.ColorLogger;
+import com.surftools.miasma.Colorizer;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 import com.surftools.miasma.io.IASMessage;
@@ -50,7 +50,7 @@ import com.surftools.miasma.io.MessageWriter;
  */
 public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
   static final Logger logger = LoggerFactory.getLogger(AbstractWinlinkFormatter.class);
-  protected ColorLogger clog;
+  protected Colorizer cz;
   protected static final String SEP = "\r\n";
   protected IConfigurationManager cm;
   protected Path acceptedMessagePath;
@@ -62,7 +62,7 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
 
   public AbstractWinlinkFormatter(IConfigurationManager cm) {
     this.cm = cm;
-    clog = new ColorLogger(logger, cm);
+    cz = new Colorizer(cm);
 
     var rootPathString = cm.getAsString(MiasmaKey.ROOT_PATH);
     var messagesPath = IoUtils.makeDirIfNeeded(Path.of(rootPathString, "files", "messages"));
@@ -74,9 +74,9 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
     maxLengthSms = cm.getAsInt(MiasmaKey.BODY_MAX_LENGTH_EMAIL, 90);
 
     // this is important enough to log
-    clog.log("warn2", MiasmaKey.BODY_MAX_LENGTH_TRUNCATE_ENABLED + ": " + truncateEnabled);
-    clog.log("warn2", MiasmaKey.BODY_MAX_LENGTH_EMAIL + ": " + maxLengthEmail);
-    clog.log("warn2", MiasmaKey.BODY_MAX_LENGTH_EMAIL + ": " + maxLengthSms);
+    logger.info(cz.color("warn2", MiasmaKey.BODY_MAX_LENGTH_TRUNCATE_ENABLED + ": " + truncateEnabled));
+    logger.info(cz.color("warn2", MiasmaKey.BODY_MAX_LENGTH_EMAIL + ": " + maxLengthEmail));
+    logger.info(cz.color("warn2", MiasmaKey.BODY_MAX_LENGTH_EMAIL + ": " + maxLengthSms));
   }
 
   @Override
@@ -85,7 +85,7 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
       var errors = isCommonValidation(m);
       if (errors != null) {
         var errorMessage = m.updateMetadata(errors);
-        clog.log("error", "rejecting message: " + errorMessage);
+        logger.info(cz.color("error", "rejecting message: " + errorMessage));
         MessageWriter.writeMessage(rejectedMessagePath, errorMessage);
         continue;
       }
@@ -194,7 +194,7 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
     if (truncateEnabled) {
       var maxLength = isEmail ? maxLengthEmail : maxLengthSms;
       if (body.length() > maxLength) {
-        clog.log("warn2", "### message body length > " + maxLength + ", truncating");
+        logger.info(cz.color("warn2", "### message body length > " + maxLength + ", truncating"));
         body = body.substring(0, maxLength);
       }
     }

@@ -57,7 +57,7 @@ public abstract class AbstractHandler implements Handler {
     this.logger = logger;
 
     this.templateFileNameKey = templateFileNameKey;
-    if (cm.getAsBoolean(MiasmaKey.TEMPLATE_CACHE_FILES)) {
+    if (cm.getAsBoolean(MiasmaKey.TEMPLATE_CACHE_FILES, false)) {
       rawHtml = Files.readString(Path.of(cm.getAsString(templateFileNameKey)));
     }
   }

@@ -37,7 +37,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.surftools.miasma.ColorLogger;
+import com.surftools.miasma.Colorizer;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 import com.surftools.miasma.io.IASMessage;
@@ -51,11 +51,11 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
   protected String sender;
   protected String smsEmailReplacementAddress;
   protected String patPathString;
-  protected ColorLogger clog;
+  protected Colorizer cz;
 
   public PatWinlinkFormatter(IConfigurationManager cm) {
     super(cm);
-    clog = new ColorLogger(logger, cm);
+    cz = new Colorizer(cm);
 
     sender = cm.getAsString(MiasmaKey.APP_WINLINK_EXPRESS_SENDER);
     smsEmailReplacementAddress = cm.getAsString(MiasmaKey.APP_SMS_REPLACEMENT_EMAIL_ADDRESS);
@@ -65,7 +65,7 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
     IoUtils.makeDirIfNeeded(Path.of(patPathString, sender));
     for (var patDir : List.of("archive", "in", "out", "sent")) {
       var path = IoUtils.makeDirIfNeeded(Path.of(patPathString, sender, patDir));
-      clog.log(patDir.equals("out") ? "ok" : "error", "using PAT dir: " + path.toString());
+      logger.info(cz.color(patDir.equals("out") ? "ok" : "error", "using PAT dir: " + path.toString()));
     }
   }
 
@@ -75,7 +75,7 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
       logger.debug("received empty message list");
       return;
     }
-    clog.log("info", "received: " + messages.size() + " IASMessages from: " + inboxFilePath.getFileName());
+    logger.info(cz.color("info", "received: " + messages.size() + " IASMessages from: " + inboxFilePath.getFileName()));
     super.format(messages, inboxFilePath);
   }
 
@@ -105,7 +105,7 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
       var acceptedMessage = m.updateMessageId(messageId);
       acceptedMessage = acceptedMessage.updateMetadata("isEmail: " + isEmail);
       MessageWriter.writeMessage(acceptedMessagePath, acceptedMessage);
-      clog.log("ok", "wrote PAT b2f file: " + messageId);
+      logger.info(cz.color("ok", "wrote PAT b2f file: " + messageId));
     } catch (Exception e) {
       logger.error("Exception writing b2f file: " + path + ", " + e.getLocalizedMessage());
     }

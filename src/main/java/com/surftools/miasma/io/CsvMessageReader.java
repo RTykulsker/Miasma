@@ -42,16 +42,19 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.surftools.miasma.Colorizer;
 import com.surftools.miasma.MiasmaApp;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 
 public class CsvMessageReader implements IMessageReader {
   private static final Logger logger = LoggerFactory.getLogger(MiasmaApp.class);
+  private Colorizer cz;
 
   boolean isAutoDittoEnabled = false;
 
   public CsvMessageReader(IConfigurationManager cm) {
+    cz = new Colorizer(cm);
     isAutoDittoEnabled = cm.getAsBoolean(MiasmaKey.BATCH_AUTO_DITTO_ENABLED);
   }
 
@@ -95,7 +98,7 @@ public class CsvMessageReader implements IMessageReader {
     return list;
   }
 
-  public static List<String[]> readCsvFileIntoFieldsArray(Path inputPath, char separator, boolean ignoreQuotes,
+  public List<String[]> readCsvFileIntoFieldsArray(Path inputPath, char separator, boolean ignoreQuotes,
       int skipLines) {
     var list = new ArrayList<String[]>();
 
@@ -125,7 +128,9 @@ public class CsvMessageReader implements IMessageReader {
       logger.error("Exception reading " + inputPath.toString() + ", row " + rowCount + ", " + e.getLocalizedMessage());
     }
 
-    logger.info("returning: " + list.size() + " records from: " + inputPath.toString());
+    var level = list.size() == 0 ? "warn" : "info";
+    logger.info(cz.color(level, "returning: " + list.size() + " records from: " + inputPath.toString()));
+    // logger.info("returning: " + list.size() + " records from: " + inputPath.toString());
     return list;
   }
 }

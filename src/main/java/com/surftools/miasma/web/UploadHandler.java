@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.surftools.miasma.Colorizer;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 import com.surftools.miasma.io.IoUtils;
@@ -49,9 +50,11 @@ public class UploadHandler extends AbstractHandler {
   private Path inboxPath;
   private String holdPathString;
   private Path holdPath;
+  private Colorizer cz;
 
   public UploadHandler(IConfigurationManager cm) throws Exception {
     super(cm, logger, MiasmaKey.TEMPLATE_THANKS_UPLOAD_FILE_NAME);
+    cz = new Colorizer(cm);
 
     var rootPathString = cm.getAsString(MiasmaKey.ROOT_PATH);
     inboxPath = Path.of(rootPathString, "files", "inbox");
@@ -65,7 +68,7 @@ public class UploadHandler extends AbstractHandler {
     super.handle(ctx);
 
     var fileNames = ctx.uploadedFiles().stream().map(t -> t.getFilename()).toList();
-    logger.info("Received " + fileNames.size() + " uploaded file(s): " + String.join(",", fileNames));
+    logger.info(cz.color("info", "Received " + fileNames.size() + " uploaded file(s): " + String.join(",", fileNames)));
 
     ctx
         .uploadedFiles()

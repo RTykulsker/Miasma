@@ -46,7 +46,7 @@ public class MiasmaApp {
   protected Path unsupportedPath;
 
   protected Map<FileType, IMessageReader> fileTypeReaderMap;
-  protected ColorLogger clog;
+  protected Colorizer cz;
 
   @Option(name = "--conf", usage = "name of configuration file", required = true)
   private String confFileName = null;
@@ -88,7 +88,7 @@ public class MiasmaApp {
             // I don't know why this is needed
             var file = Path.of(inboxPath.toString(), fileNamePath.toString()).toFile();
             if (file.exists()) {
-              logger.info("file " + fileNamePath.toString() + " was created!");
+              logger.debug("file " + fileNamePath.toString() + " was created!");
               processFile(fileNamePath);
             }
           }
@@ -107,7 +107,7 @@ public class MiasmaApp {
 
   private void initialize() throws Exception {
     cm = new PropertyFileConfigurationManager(confFileName, MiasmaKey.values());
-    clog = new ColorLogger(logger, cm);
+    cz = new Colorizer(cm);
     var rootPathString = cm.getAsString(MiasmaKey.ROOT_PATH);
     rootPath = Path.of(rootPathString);
     logger.info("rootPath: " + rootPathString);
@@ -149,14 +149,14 @@ public class MiasmaApp {
     // we can't process directories, move them into unsupported
     if (fileType == FileType.DIRECTORY) {
       var unsupportedFilePath = IoUtils.moveWithFileName(pendingFilePath.toAbsolutePath(), unsupportedPath);
-      clog.log("warn", "Can't process directory. Moved to: " + unsupportedFilePath);
+      logger.warn(cz.color("warn", "Can't process directory. Moved to: " + unsupportedFilePath));
       return;
     }
 
     // non-spreadsheet, text or web files, move them into unsupported
     if (fileType == FileType.UNSUPPORTED) {
       var unsupportedFilePath = IoUtils.moveWithFileName(pendingFilePath.toAbsolutePath(), unsupportedPath);
-      clog.log("warn", "Can't process unsupported file type. Moved to: " + unsupportedFilePath);
+      logger.warn(cz.color("warn", "Can't process unsupported file type. Moved to: " + unsupportedFilePath));
       return;
     }
 
