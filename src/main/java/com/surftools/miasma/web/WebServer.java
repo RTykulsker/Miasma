@@ -28,10 +28,13 @@ SOFTWARE.
 package com.surftools.miasma.web;
 
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.surftools.miasma.Colorizer;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 
@@ -47,6 +50,8 @@ public class WebServer {
 
   public WebServer(IConfigurationManager cm) throws Exception {
     logger.info("setting up server");
+
+    var cz = new Colorizer(cm);
 
     var app = Javalin.create();
 
@@ -74,21 +79,23 @@ public class WebServer {
     var port = cm.getAsInt(MiasmaKey.SERVER_PORT, DEFAULT_SERVER_PORT);
     app.start(port);
 
-    var sb = new StringBuilder();
     var interfaces = NetworkInterface.getNetworkInterfaces();
+    var addresses = new ArrayList<String>();
     while (interfaces.hasMoreElements()) {
       var ni = interfaces.nextElement();
       var inetAddresses = ni.getInetAddresses();
       while (inetAddresses.hasMoreElements()) {
         var inetAddress = inetAddresses.nextElement();
-        sb.append("\tinterface: " + ni.getDisplayName() + ", ipAddress: " + inetAddress.getHostAddress() + "\n");
+        var hostAddress = inetAddress.getHostAddress();
+        var count = StringUtils.countMatches(hostAddress, '.');
+        if (count == 3 && !hostAddress.contains("127.0.0.1")) {
+          addresses.add(inetAddress.getHostAddress());
+        }
       }
     }
-    var s = sb.toString();
-    s = s.substring(0, s.length() - 1);
 
-    logger.info("listening on various interfaces and addresses:\n" + s);
-    logger.info("started on port: " + port);
+    logger.info(cz.color("info", "listening on: " + String.join(",", addresses)));
+    logger.info(cz.color("info", "started on port: " + port));
   }
 
 }
