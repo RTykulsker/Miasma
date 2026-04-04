@@ -63,9 +63,9 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
 
     IoUtils.makeDirIfNeeded(Path.of(patPathString));
     IoUtils.makeDirIfNeeded(Path.of(patPathString, sender));
-    for (var patDir : List.of("archive", "in", "out", "sent")) {
+    for (var patDir : List.of("archive", "in", "out", "sent", "pending")) {
       var path = IoUtils.makeDirIfNeeded(Path.of(patPathString, sender, patDir));
-      logger.info(cz.color(patDir.equals("out") ? "ok" : "error", "using PAT dir: " + path.toString()));
+      logger.info("using PAT dir: " + path.toString());
     }
   }
 
@@ -99,9 +99,14 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
     sb.append(SEP);
     sb.append(body + SEP);
 
-    var path = Path.of(patPathString, sender, "out", messageId + ".b2f");
+    // TODO bug bug bug; write to a hold folder and move (atomically)
+    // NOTE WELL: Watch Services and event polling in a tight loop are very efficient.
+    // We *CAN NOT* (slowly) write a file into a directory that is being watched
+    // We *MUST* write to a pending/holding/staging/temp directory and then (atomically) move
+    var path = Path.of(patPathString, sender, "pending", messageId + ".b2f");
     try {
       Files.writeString(path, sb.toString());
+      IoUtils.moveWithFileName(path, Path.of(patPathString, sender, "out"));
       var acceptedMessage = m.updateMessageId(messageId);
       acceptedMessage = acceptedMessage.updateMetadata("isEmail: " + isEmail);
       MessageWriter.writeMessage(acceptedMessagePath, acceptedMessage);
