@@ -34,6 +34,7 @@ public enum MiasmaKey {
   APP_PAT_PATH("app.pat.path"), // might be outside of root, ends with mailbox, before call
   APP_WINLINK_EXPRESS_SENDER("app.winlinkExpress.sender"), //
   APP_COLOR_TEXT_ENABLED("app.color.text.enabled"), //
+  APP_DEDUPE_MESSAGES("app.dedupe.messages"), //
 
   BATCH_AUTO_DITTO_ENABLED("batch.auto.ditto.enabled"), //
   BATCH_EXCEL_IGNORE_SHEET_LIST("batch.excel.ignore.sheet.list"), //
