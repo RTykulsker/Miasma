@@ -27,20 +27,29 @@ SOFTWARE.
 
 package com.surftools.miasma.winlink;
 
+import java.io.FileReader;
+import java.io.Reader;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.codec.binary.Base32;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.surftools.miasma.Colorizer;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
+import com.surftools.miasma.io.IASKey;
 import com.surftools.miasma.io.IASMessage;
 import com.surftools.miasma.io.IoUtils;
 import com.surftools.miasma.io.MessageWriter;
@@ -60,6 +69,9 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
   protected int maxLengthEmail;
   protected int maxLengthSms;
 
+  protected Set<IASKey> dedupeSet;
+  protected boolean isDedupEnabled;
+
   public AbstractWinlinkFormatter(IConfigurationManager cm) {
     this.cm = cm;
     cz = new Colorizer(cm);
@@ -77,6 +89,30 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
     logger.info(cz.color("warn2", MiasmaKey.BODY_MAX_LENGTH_TRUNCATE_ENABLED + ": " + truncateEnabled));
     logger.info(cz.color("warn2", MiasmaKey.BODY_MAX_LENGTH_EMAIL + ": " + maxLengthEmail));
     logger.info(cz.color("warn2", MiasmaKey.BODY_MAX_LENGTH_EMAIL + ": " + maxLengthSms));
+
+    isDedupEnabled = cm.getAsBoolean(MiasmaKey.APP_DEDUPE_MESSAGES);
+    if (isDedupEnabled) {
+      logger.info(cz.color("warn2", MiasmaKey.APP_DEDUPE_MESSAGES + ": " + isDedupEnabled));
+      dedupeSet = new HashSet<>();
+
+      var rowCount = -1;
+      try {
+        Reader reader = new FileReader(acceptedMessagePath.toString());
+        CSVParser parser = new CSVParserBuilder().withSeparator(',').withIgnoreQuotations(false).build();
+        CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).withCSVParser(parser).build();
+        rowCount = 1;
+        String[] fields = null;
+        while ((fields = csvReader.readNext()) != null) {
+          ++rowCount;
+          var key = new IASKey(fields[0], fields[1], fields[2]);
+          logger.debug("row: " + rowCount + " , hash: " + key.hashCode() + ", key: " + key.toString());
+          dedupeSet.add(key);
+        }
+      } catch (Exception e) {
+        logger.error("reading " + acceptedMessagePath.toString() + ", row " + rowCount + ", " + e.getMessage());
+      }
+      logger.info("read: " + (rowCount - 1) + " old messages, dedupe set size: " + dedupeSet.size());
+    }
   }
 
   @Override
@@ -154,6 +190,16 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
 
     if (StringUtils.isBlank(m.text())) {
       errors.add("empty text");
+    }
+
+    if (isDedupEnabled) {
+      var key = new IASKey(m);
+      var isContained = dedupeSet.contains(key);
+      if (isContained) {
+        errors.add("message is duplicated");
+      } else {
+        dedupeSet.add(key);
+      }
     }
 
     if (errors.size() == 0) {
