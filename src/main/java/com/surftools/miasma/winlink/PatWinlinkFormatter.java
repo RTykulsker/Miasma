@@ -99,10 +99,11 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
     sb.append(SEP);
     sb.append(body + SEP);
 
-    // TODO bug bug bug; write to a hold folder and move (atomically)
-    // NOTE WELL: Watch Services and event polling in a tight loop are very efficient.
+    // NOTE WELL: Watch Services and event polling in a tight loop are very
+    // efficient.
     // We *CAN NOT* (slowly) write a file into a directory that is being watched
-    // We *MUST* write to a pending/holding/staging/temp directory and then (atomically) move
+    // We *MUST* write to a pending/holding/staging/temp directory and then
+    // (atomically) move
     var path = Path.of(patPathString, sender, "pending", messageId + ".b2f");
     try {
       Files.writeString(path, sb.toString());
@@ -126,8 +127,9 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
   protected void handleSms(IASMessage m, String address) {
     if (smsProvider == SmsProvider.RRI) {
       if (smsEmailReplacementAddress == null) {
-        var digitsOnlAddress = address.replaceAll("^[0-9]", "");
-        handleCommon(m, "SMTP:" + digitsOnlAddress + "@sms.radiorelay.org", false);
+        var alphaNumericAddress = address.replaceAll("[^a-zA-Z0-9]", "");
+        var digitsOnlyAddress = alphaNumericAddress.replaceAll("[a-zA-Z]", "");
+        handleCommon(m, "SMTP:" + digitsOnlyAddress + "@sms.radiorelay.org", false);
       } else {
         var parts = smsEmailReplacementAddress.split("@");
         if (parts.length == 2) {
