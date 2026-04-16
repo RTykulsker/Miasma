@@ -64,7 +64,7 @@ public class DefaultConfigurationManager implements IConfigurationManager {
   public String getAsString(MiasmaKey key, String defaultValue) {
     String stringValue = map.get(key);
     if (stringValue == null) {
-      stringValue = defaultValue.toString();
+      stringValue = defaultValue;
     }
 
     return stringValue;
