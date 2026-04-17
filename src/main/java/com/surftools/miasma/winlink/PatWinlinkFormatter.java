@@ -99,17 +99,18 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
     sb.append(SEP);
     sb.append(body + SEP);
 
-    // NOTE WELL: Watch Services and event polling in a tight loop are very
-    // efficient.
-    // We *CAN NOT* (slowly) write a file into a directory that is being watched
-    // We *MUST* write to a pending/holding/staging/temp directory and then
-    // (atomically) move
+    /*
+     * NOTE WELL: Watch Services and event polling in a tight loop are very
+     * efficient. We *CAN NOT* (slowly) write a file into a directory that is being
+     * watched We *MUST* write to a pending/holding/staging/temp directory and then
+     * (atomically) move
+     */
     var path = Path.of(patPathString, sender, "pending", messageId + ".b2f");
     try {
       Files.writeString(path, sb.toString());
       IoUtils.moveWithFileName(path, Path.of(patPathString, sender, "out"));
-      var acceptedMessage = m.updateMessageId(messageId);
-      acceptedMessage = acceptedMessage.updateMetadata("isEmail: " + isEmail);
+      var acceptedMessage = new IASMessage(m.fromName(), address, m.text(), m.dateString(), m.timeString(),
+          m.fileName(), m.fileTypeName(), m.fileSourceName(), messageId, "isEmail: " + isEmail);
       MessageWriter.writeMessage(acceptedMessagePath, acceptedMessage);
       logger.info(cz.color("ok", "wrote PAT b2f file: " + messageId));
     } catch (Exception e) {

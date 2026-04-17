@@ -43,30 +43,6 @@ public record IASMessage( //
     String metadata // extra information
 ) implements IWritable {
 
-  /**
-   * return a new IASMessage with "updated" metadata
-   *
-   * @param metadata
-   * @return
-   */
-  public IASMessage updateMetadata(String metadata) {
-    return new IASMessage(this.fromName, this.toAddress, this.text, //
-        this.dateString, this.timeString, this.fileName, //
-        this.fileTypeName, this.fileSourceName, this.messageId, metadata);
-  }
-
-  /**
-   * return a new IASMessage with "updated" messageId
-   *
-   * @param messageId
-   * @return
-   */
-  public IASMessage updateMessageId(String messageId) {
-    return new IASMessage(this.fromName, this.toAddress, this.text, //
-        this.dateString, this.timeString, this.fileName, //
-        this.fileTypeName, this.fileSourceName, messageId, this.metadata);
-  }
-
   @Override
   public String[] getHeaders() {
     return new String[] { "From", "To", "Text", "Date", "Time", "File", "Type", "Source", "MessageId", "Meta" };

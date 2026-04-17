@@ -120,7 +120,8 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
     for (var m : messages) {
       var errors = isCommonValidation(m);
       if (errors != null) {
-        var errorMessage = m.updateMetadata(errors);
+        var errorMessage = new IASMessage(m.fromName(), m.toAddress(), m.text(), m.dateString(), m.timeString(),
+            m.fileName(), m.fileTypeName(), m.fileSourceName(), m.messageId(), errors);
         logger.info(cz.color("error", "rejecting message: " + errorMessage));
         MessageWriter.writeMessage(rejectedMessagePath, errorMessage);
         continue;
