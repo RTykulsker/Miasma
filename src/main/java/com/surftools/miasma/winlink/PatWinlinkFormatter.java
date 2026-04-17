@@ -135,7 +135,7 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
         var parts = smsEmailReplacementAddress.split("@");
         if (parts.length == 2) {
           address = parts[0] + "+MIASMA.sms@" + parts[1];
-          handleCommon(m, "SMTP:" + address, false);
+          handleCommon(m, "SMTP:" + address, true);
         } else {
           throw new RuntimeException("badly configured smsEmailReplacementAddress: " + smsEmailReplacementAddress);
         }

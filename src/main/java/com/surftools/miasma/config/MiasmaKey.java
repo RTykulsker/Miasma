@@ -55,7 +55,6 @@ public enum MiasmaKey {
   TEMPLATE_DOWNLOAD_FILE_NAME("template.download.fileName", "conf/download.html"), //
   TEMPLATE_TEMPLATE_FILE_NAME("template.template.fileName", "conf/miasma-template.xlsx"), //
   TEMPLATE_ACKNOWLEDGEMENTS_FILE_NAME("template.acknowledgements.fileName", "conf/acknowledgements.html") //
-
   ;
 
   private final String key;
