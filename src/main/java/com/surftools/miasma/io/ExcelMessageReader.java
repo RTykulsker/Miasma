@@ -83,6 +83,12 @@ public class ExcelMessageReader implements IMessageReader {
     var messageId = "";
 
     var file = path.toFile();
+
+    if (file.length() == 0) {
+      logger.error(cz.color("error", "Error processing Excel file: " + file.getPath() + ", zero-byte file"));
+      return list;
+    }
+
     try (var fis = new FileInputStream(file);
         var workbook = file.getName().endsWith(".xlsx") ? new XSSFWorkbook(fis) : new HSSFWorkbook(fis)) {
       for (var sheet : workbook) {
@@ -162,9 +168,8 @@ public class ExcelMessageReader implements IMessageReader {
       return cell.getStringCellValue().strip();
 
     default:
-      logger
-          .error("Unsupported type: " + cell.getCellType().name() + " on row: " + row.getRowNum() + ", col: "
-              + columnIndex);
+      logger.error(
+          "Unsupported type: " + cell.getCellType().name() + " on row: " + row.getRowNum() + ", col: " + columnIndex);
       return "";
     }
   }

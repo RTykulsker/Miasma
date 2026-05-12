@@ -61,7 +61,15 @@ public class WebMessageReader implements IMessageReader {
       if (lines.size() >= 3) {
         var fromName = lines.get(0).strip();
         var toAddress = lines.get(1).strip();
-        var text = lines.get(2).strip();
+
+        // allow for multi-line response
+        var lineNumber = 2;
+        var sb = new StringBuilder();
+        while (lineNumber < lines.size()) {
+          sb.append(lines.get(lineNumber).strip() + "\n");
+          ++lineNumber;
+        }
+        var text = sb.toString().strip();
         var metadata = getMetadata(path, fromName, toAddress, text, dateString, timeString, fileName, fileTypeName);
         var message = new IASMessage(fromName, toAddress, text, dateString, timeString, fileName, fileTypeName,
             fileSourceName, messageId, metadata);
