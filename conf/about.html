@@ -11,13 +11,46 @@ rel="stylesheet"
 </head>
 
 <body>
-<div class="container text-center">
-<h2>About I'm safe</h2>
+<div class="container text-start">
+<h1>About I'm safe</h1>
 
-<div>
-TBD	
+<h2 id="purpose">Purpose</h2>
+<p>The MIASMA (My I Am Safe Messaging App) is a simple web site/service that presents a form to all for the creation of Winlink/RRI/Quick Message email or SMS message. The app writes files that can be imported by PAT for transmission via radio.</p>
+
+<h2 id="demonstration">Demonstration</h2>
+<p>This is only a <strong>DEMONSTRATION.</strong>
+I have no desire to support, maintain, update, add features.
+Source code is available on <a href="https://github.com/RTykulsker/Miasma">github</a>
+and you are welcome to fork and modify.
+
+
+<h2 id="theory-of-operation">Theory of Operation</h2>
+<ul>
+<li>Single Messages are created via the client and submitted via a web interface. This is BYOB (Bring Your Own Device)
+<li>The Miasma web server writes out a short file with the essentials (FromName, ToAddresses, and MessageText) 
+<li>The Miasma server (non-web) sees that a file has been written to its <strong>inbox</strong></li>
+<li>The file is moved (and renamed to prevent collisions) to a <strong>pending</strong> folder</li>
+<li>The file is read by an appropriate <strong>reader</strong> and a list of <strong>transfer</strong> (IASMessage) messages are created</li>
+<li>That list is passed off to an instance of a <strong>Winlink Formatter</strong> (currently only PAT)</li>
+<li>For each address in the addresses field, the formatter creates an appropriate message for delivery, via either email or SMS</li>
+<li>A record of each <strong>accepted</strong> transfer message is written, and the file is moved to the <strong>outbox</strong></li>
+</ul>
+<p>Alternatively, the client can create a spreadsheet file, either Excel (xlsx or xls) or plain CSV and upload the file to the web server.</p>
+<ul>
+<li>one header row</li>
+<li>one message per row</li>
+<li>three columns per message (FromName, ToAddresses, Text) </li>
+<li>Multiple tabs are supported</li>
+<li>row entries can be blank. If so, I pick up the value from the previous row. I call this feature <strong>auto-ditto</strong> and it is useful for sending a bunch of messages from the same FromName, or sending the same message text to a bunch of addresses (although you can also do this via commas, in the ToAddresses field)
+</ul>
+<p>Independently, a task is running on the host looking 
+for files created by the formatter. When such files are 
+found, the task starts an instance of the PAT Winlink 
+client to transfer the message, via ham radio to a 
+Winlink RMS gateway and delivery to the destination 
+addresses.</p>
+
 </div>
-
 
 </body>
 </html>

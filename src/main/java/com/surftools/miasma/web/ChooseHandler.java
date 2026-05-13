@@ -55,10 +55,6 @@ public class ChooseHandler extends AbstractHandler {
     super.handle(ctx);
 
     var pathInfoString = ctx.req.getPathInfo();
-    var hiddenEmail = getParam("isEmail");
-    if (hiddenEmail != null) {
-      logger.info("### hidden: " + hiddenEmail);
-    }
     var isEmail = pathInfoString.equals("/chooseEmail");
 
     var html = getTemplateHtml();

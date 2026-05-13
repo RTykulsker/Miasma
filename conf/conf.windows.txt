@@ -1,13 +1,13 @@
 #
 root.path=C:/miasma/server
 
-app.sms.replacementEmailAddress=RTykulsker@gmail.com
+### app.sms.replacementEmailAddress=RTykulsker@gmail.com
 app.pat.path:C:/miasma/pat/mailbox
-app.winlinkExpress.sender:KM6SO
-app.dedupe.messages=true
+app.winlinkExpress.sender:W7MIR
+app.dedupe.messages=false
 
 batch.excel.ignore.sheet.list=template,instructions
 
-server.port:5000
+server.port:80
 
 

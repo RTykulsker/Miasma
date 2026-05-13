@@ -41,7 +41,8 @@ import com.surftools.miasma.config.MiasmaKey;
 import io.javalin.Javalin;
 
 /**
- * Web Server to handle both the BYOD (Bring Your Own Device) as well as file uploads
+ * Web Server to handle both the BYOD (Bring Your Own Device) as well as file
+ * uploads
  */
 public class WebServer {
   static final Logger logger = LoggerFactory.getLogger(WebServer.class);
@@ -58,6 +59,7 @@ public class WebServer {
     var indexHandler = new StaticHandler(cm, MiasmaKey.TEMPLATE_INDEX_FILE_NAME);
     app.get("/", indexHandler);
     app.get("/index", indexHandler);
+    app.get("/index.html", indexHandler);
 
     var chooseHandler = new ChooseHandler(cm);
     app.get("/chooseEmail", chooseHandler);
@@ -70,8 +72,13 @@ public class WebServer {
     app.get("/upload", new StaticHandler(cm, MiasmaKey.TEMPLATE_INDEX_UPLOAD_FILE_NAME));
     app.post("/uploadResponse", new UploadHandler(cm));
 
-    app.get("/about", new StaticHandler(cm, MiasmaKey.TEMPLATE_ABOUT_FILE_NAME));
-    app.get("/acknowledgements", new StaticHandler(cm, MiasmaKey.TEMPLATE_ACKNOWLEDGEMENTS_FILE_NAME));
+    var aboutHandler = new StaticHandler(cm, MiasmaKey.TEMPLATE_ABOUT_FILE_NAME);
+    app.get("/about", aboutHandler);
+    app.get("/about.html", aboutHandler);
+
+    var acknowledgementHandler = new StaticHandler(cm, MiasmaKey.TEMPLATE_ACKNOWLEDGEMENTS_FILE_NAME);
+    app.get("/acknowledgements", acknowledgementHandler);
+    app.get("/acknowledgements.html", acknowledgementHandler);
 
     app.get("/download", new StaticHandler(cm, MiasmaKey.TEMPLATE_DOWNLOAD_FILE_NAME));
     app.get("/template", new TemplateHandler(cm));
