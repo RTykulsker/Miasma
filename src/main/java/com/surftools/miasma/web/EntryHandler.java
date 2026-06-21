@@ -29,6 +29,7 @@ package com.surftools.miasma.web;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +60,13 @@ public class EntryHandler extends AbstractHandler {
     super.handle(ctx);
 
     var fromName = getParam("name");
-    var toAddresses = getParam("address");
+    var address = getParam("address");
     var text = getParam("message");
+    var email_address = getParam("email_address");
+    var sms_address = getParam("sms_address");
+    var addressList = List.of(address, email_address, sms_address).stream().filter(s -> s != null && !s.isEmpty())
+        .toList();
+    var toAddresses = String.join(",", addressList);
 
     logger.info("got request name: " + fromName + ", address: " + toAddresses + ", message: " + text);
 

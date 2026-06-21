@@ -54,7 +54,10 @@ public enum MiasmaKey {
   TEMPLATE_ABOUT_FILE_NAME("template.about.fileName", "conf/about.html"), //
   TEMPLATE_DOWNLOAD_FILE_NAME("template.download.fileName", "conf/download.html"), //
   TEMPLATE_TEMPLATE_FILE_NAME("template.template.fileName", "conf/miasma-template.xlsx"), //
-  TEMPLATE_ACKNOWLEDGEMENTS_FILE_NAME("template.acknowledgements.fileName", "conf/acknowledgements.html") //
+  TEMPLATE_ACKNOWLEDGEMENTS_FILE_NAME("template.acknowledgements.fileName", "conf/acknowledgements.html"), //
+  TEMPLATE_BOOTSTRAP_CSS_FILE_NAME("template.bootstrap.css.fileName", "conf/bootstrap.min.css"), //
+  TEMPLATE_BOOTSTRAP_JS_FILE_NAME("template.bootstrap.js.fileName", "conf/bootstrap.min.js"), //
+  TEMPLATE_COMPOSE_FILE_NAME("template.compose.fileName", "conf/compose.html"), //
   ;
 
   private final String key;

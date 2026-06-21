@@ -41,17 +41,16 @@ import io.javalin.http.Handler;
 /**
  * for static html pages
  */
-public class StaticHandler implements Handler {
-  protected final String html;
+public class ComposeHandler implements Handler {
   protected final String filename;
 
-  public StaticHandler(IConfigurationManager cm, MiasmaKey miasmaKey) throws Exception {
+  public ComposeHandler(IConfigurationManager cm, MiasmaKey miasmaKey) throws Exception {
     filename = cm.getAsString(miasmaKey);
-    html = Files.readString(Path.of(filename));
   }
 
   @Override
   public void handle(Context ctx) throws Exception {
+    var html = Files.readString(Path.of(filename));
     if (filename.endsWith(".css")) {
       ctx.contentType("text/css");
       ctx.result(html);

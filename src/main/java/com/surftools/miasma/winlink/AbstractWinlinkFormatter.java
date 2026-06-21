@@ -83,7 +83,7 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
 
     truncateEnabled = cm.getAsBoolean(MiasmaKey.BODY_MAX_LENGTH_TRUNCATE_ENABLED, true);
     maxLengthEmail = cm.getAsInt(MiasmaKey.BODY_MAX_LENGTH_EMAIL, 500);
-    maxLengthSms = cm.getAsInt(MiasmaKey.BODY_MAX_LENGTH_EMAIL, 90);
+    maxLengthSms = cm.getAsInt(MiasmaKey.BODY_MAX_LENGTH_EMAIL, 92);
 
     // this is important enough to log
     logger.info(cz.color("warn2", MiasmaKey.BODY_MAX_LENGTH_TRUNCATE_ENABLED + ": " + truncateEnabled));
@@ -224,6 +224,14 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
     text = text.replaceAll("[^\\x00-\\x7F]", "."); // translate non-ascii characters
     text = text.replaceAll("\\u009d", "");
 
+    if (truncateEnabled) {
+      var maxLength = isEmail ? maxLengthEmail : maxLengthSms;
+      if (text.length() > maxLength) {
+        logger.info(cz.color("warn2", "### message length > " + maxLength + ", truncating"));
+        text = text.substring(0, maxLength);
+      }
+    }
+
     var fromName = m.fromName();
     var fields = m.fromName().split(" ");
     if (fields.length > 1) {
@@ -237,14 +245,6 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
     var dateString = localDate.getMonthValue() + "/" + localDate.getDayOfMonth();
     var header = "From " + fromName + " " + dateString + " ONE WAY MSG" + SEP;
     var body = header + text;
-
-    if (truncateEnabled) {
-      var maxLength = isEmail ? maxLengthEmail : maxLengthSms;
-      if (body.length() > maxLength) {
-        logger.info(cz.color("warn2", "### message body length > " + maxLength + ", truncating"));
-        body = body.substring(0, maxLength);
-      }
-    }
 
     return body;
   }
