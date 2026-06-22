@@ -42,24 +42,32 @@ import io.javalin.http.Handler;
  * for static html pages
  */
 public class StaticHandler implements Handler {
-  protected final String html;
+  protected String content;
   protected final String filename;
 
   public StaticHandler(IConfigurationManager cm, MiasmaKey miasmaKey) throws Exception {
     filename = cm.getAsString(miasmaKey);
-    html = Files.readString(Path.of(filename));
+
+    if (cm.getAsBoolean(MiasmaKey.TEMPLATE_CACHE_FILES, true)) {
+      content = Files.readString(Path.of(filename));
+    }
+
   }
 
   @Override
   public void handle(Context ctx) throws Exception {
+    if (content == null) {
+      content = Files.readString(Path.of(filename));
+    }
+
     if (filename.endsWith(".css")) {
       ctx.contentType("text/css");
-      ctx.result(html);
+      ctx.result(content);
     } else if (filename.endsWith(".js")) {
       ctx.contentType("application/javascript");
-      ctx.result(html);
+      ctx.result(content);
     } else {
-      ctx.html(html);
+      ctx.html(content);
     }
 
     ctx.status(HttpStatus.OK_200);

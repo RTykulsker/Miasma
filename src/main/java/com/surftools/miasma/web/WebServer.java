@@ -61,15 +61,13 @@ public class WebServer {
     app.get("/index", indexHandler);
     app.get("/index.html", indexHandler);
 
-    var chooseHandler = new ChooseHandler(cm);
-    app.get("/chooseEmail", chooseHandler);
-    app.get("/chooseSMS", chooseHandler);
-
     var entryHandler = new EntryHandler(cm);
     app.get("/entry", entryHandler);
     app.post("/entry", entryHandler);
 
-    app.get("/upload", new StaticHandler(cm, MiasmaKey.TEMPLATE_INDEX_UPLOAD_FILE_NAME));
+    var composeHandler = new StaticHandler(cm, MiasmaKey.TEMPLATE_COMPOSE_FILE_NAME);
+    app.get("/compose", composeHandler);
+
     app.post("/uploadResponse", new UploadHandler(cm));
 
     var aboutHandler = new StaticHandler(cm, MiasmaKey.TEMPLATE_ABOUT_FILE_NAME);
@@ -83,13 +81,6 @@ public class WebServer {
     var bootstrapCssHandler = new StaticHandler(cm, MiasmaKey.TEMPLATE_BOOTSTRAP_CSS_FILE_NAME);
     app.get("/bootstrap.min.css", bootstrapCssHandler);
 
-    var bootstrapJsHandler = new StaticHandler(cm, MiasmaKey.TEMPLATE_BOOTSTRAP_JS_FILE_NAME);
-    app.get("/bootstrap.min.js", bootstrapJsHandler);
-
-    var composeHandler = new ComposeHandler(cm, MiasmaKey.TEMPLATE_COMPOSE_FILE_NAME);
-    app.get("/compose", composeHandler);
-
-    app.get("/download", new StaticHandler(cm, MiasmaKey.TEMPLATE_DOWNLOAD_FILE_NAME));
     app.get("/template", new TemplateHandler(cm));
 
     var port = cm.getAsInt(MiasmaKey.SERVER_PORT, DEFAULT_SERVER_PORT);
