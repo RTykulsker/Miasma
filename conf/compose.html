@@ -30,7 +30,7 @@
             <label>Email: </label>
             <input type="email" id="email_address" name="email_address" placeholder="recipient@example.com">
 			<span>
-
+			<p>
 			<span>
             <label>SMS: </label>
             <input type="tel" id="sms_address" name="sms_address" placeholder="XXX-XXX-XXXX" pattern="\d{3}-\d{3}-\d{4}" title="Format: 123-456-7890">
@@ -38,7 +38,7 @@
         </div>
 
         <div class="form-control">
-            <label for="message">Message (click to insert short status text)</label>
+            <label for="message">Message (click to insert predefined text or type your own message in the box)</label>
 			<!-- add -->
 			<select class="form-content dropdown" id="shortMessage" name="shortMessage" size="1" onchange="handle_select()">
 				<option value="0">(none)</option>
@@ -65,9 +65,13 @@
             <div id="charCount" class="text-sm text-sm-end" align="right">0/92</div>
   		</div>
 
+		<div>
+			Note that message delivery is <strong>NOT</strong> guaranteed and replies to your device are  <strong>NOT</strong> possible
+		</div>
+		
 		<div class="form-control text-center">
   			<span>
-  				<button class="btn btn-primary" type="submit" onclick="return handle_submit();">Submit</button>
+  				<button class="btn btn-primary" type="submit" onclick="return handle_submit();">submit</button>
 				<!--
   				<button class="btn btn-secondary" type="reset" onclick="return handle_reset();">Reset</button>
 				-->
