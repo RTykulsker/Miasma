@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -94,7 +95,27 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
     sb.append("From: " + sender + SEP);
     sb.append("Mbo: " + sender + SEP);
     sb.append("Subject: I'M SAFE" + SEP);
-    sb.append("To: " + address + SEP);
+
+    if (isEmail) {
+      var addressSet = new HashSet<String>();
+      var addresses = address.split(";");
+      for (var a : addresses) {
+        if (a.strip().toLowerCase().endsWith("@winlink.org")) {
+          a = a.substring(0, a.indexOf("@"));
+        }
+        if (!addressSet.contains(a)) {
+          if (a.contains("@")) {
+            sb.append("To: SMTP:" + a + SEP);
+          } else {
+            sb.append("To: " + a + SEP);
+          }
+        }
+        addressSet.add(a);
+      }
+    } else {
+      sb.append("To: " + address + SEP);
+    }
+
     sb.append("Type: Private" + SEP);
     sb.append(SEP);
     sb.append(body + SEP);
@@ -121,7 +142,7 @@ public class PatWinlinkFormatter extends AbstractWinlinkFormatter {
 
   @Override
   protected void handleEmail(IASMessage m, String address) {
-    handleCommon(m, "SMTP:" + address, true);
+    handleCommon(m, address, true);
   }
 
   @Override

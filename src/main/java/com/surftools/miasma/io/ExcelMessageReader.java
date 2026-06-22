@@ -44,20 +44,15 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.surftools.miasma.Colorizer;
-import com.surftools.miasma.MiasmaApp;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 
-public class ExcelMessageReader implements IMessageReader {
-  private static final Logger logger = LoggerFactory.getLogger(MiasmaApp.class);
-  private Colorizer cz;
-  boolean isAutoDittoEnabled = true;
+public class ExcelMessageReader extends BaseSpreadsheetReader {
+  private static final Logger logger = LoggerFactory.getLogger(ExcelMessageReader.class);
   private Set<String> ignoreSheetSet;
 
   public ExcelMessageReader(IConfigurationManager cm) {
-    cz = new Colorizer(cm);
-    isAutoDittoEnabled = cm.getAsBoolean(MiasmaKey.BATCH_AUTO_DITTO_ENABLED, isAutoDittoEnabled);
+    super(cm);
 
     ignoreSheetSet = new LinkedHashSet<String>();
     var ignoreSheetString = cm.getAsString(MiasmaKey.BATCH_EXCEL_IGNORE_SHEET_LIST, "template,instructions");
@@ -72,7 +67,7 @@ public class ExcelMessageReader implements IMessageReader {
 
   @Override
   public List<IASMessage> readFile(Path path, FileType fileType, FileSource fileSource) {
-    var list = new ArrayList<IASMessage>();
+    List<IASMessage> list = new ArrayList<IASMessage>();
 
     var now = LocalDateTime.now();
     var dateString = now.toLocalDate().toString();
@@ -134,6 +129,7 @@ public class ExcelMessageReader implements IMessageReader {
       logger.error("Exception processing Excel file: " + file.getPath() + ", " + e.getMessage());
       e.printStackTrace();
     }
+    list = coalesce(list);
     return list;
   }
 

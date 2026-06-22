@@ -42,25 +42,20 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import com.surftools.miasma.Colorizer;
-import com.surftools.miasma.MiasmaApp;
 import com.surftools.miasma.config.IConfigurationManager;
 import com.surftools.miasma.config.MiasmaKey;
 
-public class CsvMessageReader implements IMessageReader {
-  private static final Logger logger = LoggerFactory.getLogger(MiasmaApp.class);
-  private Colorizer cz;
-
-  boolean isAutoDittoEnabled = false;
+public class CsvMessageReader extends BaseSpreadsheetReader {
+  private static final Logger logger = LoggerFactory.getLogger(BaseSpreadsheetReader.class);
 
   public CsvMessageReader(IConfigurationManager cm) {
-    cz = new Colorizer(cm);
+    super(cm);
     isAutoDittoEnabled = cm.getAsBoolean(MiasmaKey.BATCH_AUTO_DITTO_ENABLED);
   }
 
   @Override
   public List<IASMessage> readFile(Path path, FileType fileType, FileSource fileSource) {
-    var list = new ArrayList<IASMessage>();
+    List<IASMessage> list = new ArrayList<IASMessage>();
 
     var now = LocalDateTime.now();
     var dateString = now.toLocalDate().toString();
@@ -95,6 +90,7 @@ public class CsvMessageReader implements IMessageReader {
           fileSourceName, messageId, metadata);
       list.add(message);
     }
+    list = coalesce(list);
     return list;
   }
 
@@ -112,12 +108,12 @@ public class CsvMessageReader implements IMessageReader {
       Reader reader = new FileReader(inputPath.toString());
       CSVParser parser = new CSVParserBuilder() //
           .withSeparator(separator) //
-            .withIgnoreQuotations(ignoreQuotes) //
-            .build();
+          .withIgnoreQuotations(ignoreQuotes) //
+          .build();
       CSVReader csvReader = new CSVReaderBuilder(reader) //
           .withSkipLines(skipLines)//
-            .withCSVParser(parser)//
-            .build();
+          .withCSVParser(parser)//
+          .build();
       rowCount = 1;
       String[] fields = null;
       while ((fields = csvReader.readNext()) != null) {
@@ -130,7 +126,6 @@ public class CsvMessageReader implements IMessageReader {
 
     var level = list.size() == 0 ? "warn" : "info";
     logger.info(cz.color(level, "returning: " + list.size() + " records from: " + inputPath.toString()));
-    // logger.info("returning: " + list.size() + " records from: " + inputPath.toString());
     return list;
   }
 }

@@ -43,6 +43,11 @@ public record IASMessage( //
     String metadata // extra information
 ) implements IWritable {
 
+  public IASMessage updateToAddresses(String newToAddresses) {
+    return new IASMessage(fromName, newToAddresses, text, dateString, timeString, fileName, fileTypeName,
+        fileSourceName, messageId, metadata);
+  }
+
   @Override
   public String[] getHeaders() {
     return new String[] { "From", "To", "Text", "Date", "Time", "File", "Type", "Source", "MessageId", "Meta" };

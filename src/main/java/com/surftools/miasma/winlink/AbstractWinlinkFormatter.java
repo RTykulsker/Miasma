@@ -127,14 +127,19 @@ public abstract class AbstractWinlinkFormatter implements IWinlinkFormatter {
         continue;
       }
 
+      var emailAddressList = new ArrayList<String>();
       var addresses = m.toAddress().split("[,;\\s]+");
       for (var address : addresses) {
         if (isEmailAddress(m, address)) {
-          handleEmail(m, address);
+          emailAddressList.add(address);
         } else {
           handleSms(m, address);
         }
       } // end loop over addresses in toAddress
+      if (emailAddressList.size() > 0) {
+        var emailAddressesString = String.join(";", emailAddressList);
+        handleEmail(m, emailAddressesString);
+      }
     } // end loop over messages in list
   }
 
