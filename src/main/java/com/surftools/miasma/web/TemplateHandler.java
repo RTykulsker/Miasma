@@ -39,17 +39,28 @@ import io.javalin.http.Handler;
 
 public class TemplateHandler implements Handler {
   private byte[] templateBytes;
-  private String fileName;
+  private final String fullFileName;
+  private final String shortFileName;
 
   public TemplateHandler(IConfigurationManager cm) throws Exception {
-    fileName = Path.of(cm.getAsString(MiasmaKey.TEMPLATE_TEMPLATE_FILE_NAME)).getFileName().toString();
+
+    fullFileName = cm.getAsString(MiasmaKey.TEMPLATE_TEMPLATE_FILE_NAME);
+    shortFileName = Path.of(cm.getAsString(MiasmaKey.TEMPLATE_TEMPLATE_FILE_NAME)).getFileName().toString();
     templateBytes = Files.readAllBytes(Path.of(cm.getAsString(MiasmaKey.TEMPLATE_TEMPLATE_FILE_NAME)));
+
+    if (cm.getAsBoolean(MiasmaKey.TEMPLATE_CACHE_FILES, true)) {
+      templateBytes = Files.readAllBytes(Path.of(fullFileName));
+    }
   }
 
   @Override
   public void handle(Context ctx) throws Exception {
+    if (templateBytes == null) {
+      templateBytes = Files.readAllBytes(Path.of(fullFileName));
+    }
+
     ctx.contentType(ContentType.APPLICATION_OCTET_STREAM);
-    ctx.header("Content-disposition", "attachment; filename=" + fileName);
+    ctx.header("Content-disposition", "attachment; filename=" + shortFileName);
     ctx.result(templateBytes);
   }
 
