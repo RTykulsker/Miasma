@@ -78,9 +78,9 @@ public class EntryHandler extends AbstractHandler {
     Files.writeString(path, sb);
 
     var html = getTemplateHtml();
-    html = html.replaceAll("<!-- FROM -->", fromName);
-    html = html.replaceAll("<!-- TO -->", toAddresses);
-    html = html.replaceAll("<!-- MESSAGE -->", text);
+    html = html.replace("<!-- FROM -->", fromName);
+    html = html.replace("<!-- TO -->", toAddresses);
+    html = html.replace("<!-- MESSAGE -->", text);
     returnHtml(html);
   }
 
